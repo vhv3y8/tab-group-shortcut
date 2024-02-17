@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "tab-group-shortcut",
+  "version": "1.0",
+  "description": "adds a shortcut to group current tab.",
+
+  "permissions": ["tabs"],
+  "content_scripts": [{ "matches": ["<all_urls>"], "js": ["content.js"] }],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}
