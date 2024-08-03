@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  box-sizing: border-box;
+  padding: 2rem;
+
+  display: flex;
+  justify-content: center;
+}
+
+main {
+  width: min(800px, 100%);
+
+  display: flex;
+  flex-flow: column nowrap;
+
+  font-family: "Ubuntu";
+  font-size: 16px;
+
+  .extension {
+    background-color: #d6deff;
+  }
+
+  h3 span {
+    background-color: #ddd;
+    padding: 0.2em 0.4em;
+  }
+
+  article {
+    margin-block: 1.5em 4em;
+
+    video {
+      width: 100%;
+      margin-bottom: 0.5em;
+    }
+
+    p {
+      box-sizing: border-box;
+
+      padding-block: 0.75em;
+      padding-left: 0.5em;
+
+      margin-top: 0.5em;
+
+      span {
+        padding: 0.25em 0.5em;
+        background-color: #ccc;
+        border-radius: 0.25em;
+      }
+    }
+  }
+}

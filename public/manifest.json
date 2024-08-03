@@ -6,11 +6,18 @@
   "icons": {
     "128": "icon128.png"
   },
-
   "permissions": ["tabs"],
-  "content_scripts": [{ "matches": ["<all_urls>"], "js": ["content.js"] }],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"
+  },
+  "action": {
+    "default_title": "Tab Group Shortcut"
   }
 }

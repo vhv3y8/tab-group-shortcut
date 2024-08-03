@@ -1,5 +1,17 @@
+chrome.action.onClicked.addListener((tab) => {
+  chrome.tabs.create({
+    url: chrome.runtime.getURL("description/index.html"),
+  })
+})
+
+chrome.runtime.onInstalled.addListener((info) => {
+  chrome.tabs.create({
+    url: chrome.runtime.getURL("description/index.html"),
+  })
+})
+
 chrome.runtime.onMessage.addListener((msg, sender, sendRes) => {
-  if (msg === "CREATE_GROUP") {
+  if (msg === "TOGGLE_GROUP") {
     chrome.tabs
       .query({ highlighted: true, currentWindow: true })
       .then((tabList) => {
