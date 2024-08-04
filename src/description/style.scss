@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu&display=swap");
 
 html,
 body {
@@ -20,16 +20,33 @@ main {
   display: flex;
   flex-flow: column nowrap;
 
+  padding-inline: 2em;
+
   font-family: "Ubuntu";
   font-size: 16px;
+
+  h3 span {
+    padding: 0.2em 0.4em;
+  }
 
   .extension {
     background-color: #d6deff;
   }
 
-  h3 span {
-    background-color: #ddd;
-    padding: 0.2em 0.4em;
+  .important {
+    background-color: #ffc3ad;
+  }
+
+  span.highlight {
+    padding: 0.25em 0.5em;
+    border: 2px solid black;
+
+    font-size: 0.95em;
+  }
+
+  span.refresh {
+    background-color: #b6e3c8;
+    padding: 0.25em;
   }
 
   article {
@@ -42,16 +59,18 @@ main {
 
     p {
       box-sizing: border-box;
-
       padding-block: 0.75em;
       padding-left: 0.5em;
 
       margin-top: 0.5em;
 
-      span {
+      span.key {
         padding: 0.25em 0.5em;
-        background-color: #ccc;
+        background-color: #eee;
         border-radius: 0.25em;
+        border: 2px solid black;
+
+        font-size: 0.85em;
       }
     }
   }

@@ -1,21 +1,30 @@
 {
   "manifest_version": 3,
   "name": "Tab Group Shortcut",
-  "version": "1.0",
+  "version": "1.1",
   "description": "adds a shortcut to group current tab.",
   "icons": {
     "128": "icon128.png"
   },
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "storage"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
   ],
-  "background": {
-    "service_worker": "background.js",
-    "type": "module"
+  "options_page": "options/options.html",
+  "commands": {
+    "FORCE_TOGGLE_GROUP": {
+      "suggested_key": {
+        "default": "Ctrl+Q"
+      },
+      "description": "Force toggle group for selected tabs."
+    }
   },
   "action": {
     "default_title": "Tab Group Shortcut"

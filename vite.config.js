@@ -11,11 +11,13 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: "../dist",
       assetsDir: ".", // puts assets into 'outDir/assetsDir'
+      target: "es2022", // to use top-level await
       rollupOptions: {
         input: {
           content: "src/content.js",
           background: "src/background.js",
           description: "src/description/index.html",
+          options: "src/options/options.html",
         },
         output: {
           entryFileNames: "[name].js", // applied to js files
