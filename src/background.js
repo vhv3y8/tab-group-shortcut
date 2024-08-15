@@ -1,14 +1,16 @@
-// open description page when installed
 chrome.runtime.onInstalled.addListener((info) => {
-  chrome.tabs.create({
-    url: chrome.runtime.getURL("description/index.html"),
-  })
+  // set initial setting data
+  if (info.reason === "install") {
+    chrome.storage.sync.set({
+      settings: {
+        turnOffForceCommand: false,
+      },
+    })
 
-  chrome.storage.sync.set({
-    settings: {
-      turnOffForceCommand: false,
-    },
-  })
+    chrome.tabs.create({
+      url: chrome.runtime.getURL("description/index.html"),
+    })
+  }
 })
 
 // open description page at icon click
