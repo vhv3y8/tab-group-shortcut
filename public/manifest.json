@@ -1,20 +1,27 @@
 {
   "manifest_version": 3,
   "name": "Tab Group Shortcut",
-  "version": "1.1",
-  "description": "adds a shortcut to group current tab.",
+  "version": "1.2",
+  "description": "Adds a shortcut to group current tab.",
   "icons": {
     "128": "icon128.png"
   },
-  "permissions": ["tabs", "storage"],
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
     }
   ],
   "options_page": "options/options.html",
