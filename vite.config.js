@@ -1,5 +1,4 @@
 import { defineConfig } from "vite"
-import path from "node:path"
 
 import zipPack from "vite-plugin-zip-pack"
 import manifest from "./public/manifest.json"
