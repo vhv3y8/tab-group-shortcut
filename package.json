@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "npm run prettier && vite build --mode development",
-    "build:zip": "npm run prettier && vite build --mode production",
+    "build": "pnpm prettier && vite build --mode development",
+    "build:zip": "pnpm prettier && vite build --mode production",
     "prettier": "prettier . --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
