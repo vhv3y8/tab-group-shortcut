@@ -1,76 +1,171 @@
+import {
+  storageInitial,
+  storagePropertyChangeMaps,
+  mergeDeep,
+  renameProperty,
+  getSettings,
+} from "./helpers/storage"
+import { toggleSelectedTabs } from "./helpers/tabs"
+
+/**
+ * When extension is installed or updated.
+ */
 chrome.runtime.onInstalled.addListener((info) => {
-  // set initial setting data
-  if (info.reason === "install") {
-    chrome.storage.sync.set({
-      settings: {
-        turnOffForceCommand: false,
-      },
-    })
+  switch (info.reason) {
+    // Extension Install
+    case "install": {
+      // set initial setting data
+      chrome.storage.sync.set(storageInitial)
 
-    chrome.tabs.create({
-      url: chrome.runtime.getURL("description/index.html"),
-    })
-  }
-})
+      // open tutorial page
+      chrome.tabs.create({
+        url: chrome.runtime.getURL("description/index.html"),
+      })
+      break
+    }
+    // Extension Update
+    case "update": {
+      // Update the storage
+      chrome.storage.sync.get(null, (currentData) => {
+        // update changed property names to current data
+        storagePropertyChangeMaps.forEach(({ oldPath, newPath, transform }) => {
+          renameProperty(currentData, oldPath, newPath, transform)
+        })
 
-// open description page at icon click
-chrome.action.onClicked.addListener((tab) => {
-  chrome.tabs.create({
-    url: chrome.runtime.getURL("description/index.html"),
-  })
-})
+        // deep merge added properties
+        // overwrites current data over default values
+        const merged = mergeDeep(storageInitial, currentData)
+        chrome.storage.sync.set(merged)
 
-// force toggle tab group
-chrome.commands.onCommand.addListener(async (command) => {
-  if (command === "FORCE_TOGGLE_GROUP") {
-    // check setting every time when command is matched
-    let turnOffForceCommand = await getSettings().then(
-      (setting) => setting.turnOffForceCommand,
-    )
+        if (import.meta.env.MODE === "development") {
+          console.log("[update] storageInitial", storageInitial)
+          console.log("[update] currentData", currentData)
+          console.log("[update] merged", merged)
+        }
+      })
 
-    if (!turnOffForceCommand) {
-      console.log("FORCE")
-      toggleSelectedTabs()
+      // open home page for update notes
+      chrome.tabs.create({
+        url: chrome.runtime.getURL("home/index.html"),
+      })
+      break
     }
   }
 })
 
-// toggle tab group
+/**
+ * When extension icon is clicked.
+ */
+chrome.action.onClicked.addListener((tab) => {
+  chrome.tabs.create({
+    url: chrome.runtime.getURL("home/index.html"),
+  })
+})
+
+/**
+ * Performs action given from content script.
+ */
 chrome.runtime.onMessage.addListener((msg, sender, sendRes) => {
-  if (msg === "TOGGLE_GROUP") {
-    console.log("TOGGLE")
-    toggleSelectedTabs()
+  if (import.meta.env.MODE === "development")
+    console.log("[onMessage] msg", msg)
+
+  switch (msg.action) {
+    case "PAGE_COMMAND": {
+      getSettings().then((settings) => {
+        if (import.meta.env.MODE === "development")
+          console.log(
+            "[onMessage] [PAGE_COMMAND] settings.pageCommand",
+            settings.pageCommand,
+          )
+
+        sendRes(settings.pageCommand)
+      })
+      return true
+    }
+    case "TOGGLE_GROUP": {
+      if (import.meta.env.MODE === "development")
+        console.log("[onMessage] [TOGGLE_GROUP]")
+
+      // group / ungroup
+      toggleSelectedTabs().then((isCreatingGroup) => {
+        // get settings to check showNamingPopup value
+        getSettings().then((settings) => {
+          if (import.meta.env.MODE === "development") {
+            console.log("[onMessage] [TOGGLE_GROUP] settings", settings)
+            console.log(
+              "[onMessage] [TOGGLE_GROUP] isCreatingGroup",
+              isCreatingGroup,
+            )
+          }
+
+          // send back boolean about showing naming popup prompt or not
+          sendRes(settings.showNamingPopup && isCreatingGroup)
+        })
+      })
+      return true
+    }
+    case "SET_GROUP_NAME": {
+      if (import.meta.env.MODE === "development") {
+        console.log(
+          "[onMessage] [SET_GROUP_NAME] sender.tab.groupId",
+          sender.tab.groupId,
+        )
+      }
+
+      if (sender.tab.groupId !== -1) {
+        chrome.tabGroups.update(sender.tab.groupId, {
+          title: msg.groupName,
+        })
+      }
+      return true
+    }
+    default: {
+      return true
+    }
   }
 })
 
-function toggleSelectedTabs() {
-  chrome.tabs
-    .query({ highlighted: true, currentWindow: true })
-    .then((tabList) => {
-      const tabIds = tabList.map((tab) => tab.id)
-      const groupIds = tabList.map((tab) => tab.groupId)
+/**
+ * When predefined command is pressed.
+ */
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === "FORCE_TOGGLE_GROUP") {
+    // check setting every time when command is matched
+    let { enableForceCommand, showNamingPopup } = await getSettings().then(
+      (settings) => ({
+        enableForceCommand: settings.enableForceCommand,
+        showNamingPopup: settings.showNamingPopup,
+      }),
+    )
 
-      if (groupIds.every((id) => id === -1)) {
-        chrome.tabs.group({ tabIds: tabList.map((tab) => tab.id) })
-      } else if (groupIds.every((id) => id === groupIds[0])) {
-        chrome.tabs.ungroup(tabIds)
-      } else {
-        // find the first tab that has group, and add every other tabs to that group.
-        for (const id of groupIds) {
-          if (id !== -1) {
-            chrome.tabs.group({
-              groupId: id,
-              tabIds,
-            })
-            break
-          }
-        }
+    if (enableForceCommand) {
+      // do force group / ungroup
+      const isCreatingGroup = await toggleSelectedTabs()
+
+      if (import.meta.env.MODE === "development")
+        console.log("[onCommand] [FORCE] isCreatingGroup", isCreatingGroup)
+
+      if (showNamingPopup && isCreatingGroup) {
+        const focusedTab = await chrome.tabs
+          .query({ active: true, currentWindow: true })
+          .then((tabs) => tabs[0])
+
+        if (import.meta.env.MODE === "development")
+          console.log("[onCommand] [FORCE] focusedTab", focusedTab)
+
+        // send message about showing naming popup to focused tab
+        chrome.tabs
+          .sendMessage(focusedTab.id, {
+            action: "SHOW_NAME_POPUP",
+          })
+          .catch(() => {
+            // cannot establish connection
+            console.log(
+              "[onCommand] [FORCE]  content script is restricted for this page. cannot show popup: ",
+              focusedTab.url,
+            )
+          })
       }
-    })
-}
-
-async function getSettings() {
-  return chrome.storage.sync.get(["settings"]).then((db) => {
-    return db.settings
-  })
-}
+    }
+  }
+})

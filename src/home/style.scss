@@ -14,6 +14,64 @@ body {
   justify-content: center;
 }
 
+h2 {
+  margin-top: 0.5em;
+  margin-bottom: 1.2em;
+}
+
+p {
+  margin-block: 0.5em;
+}
+
+hr {
+  border-top: 1px solid #999;
+  width: 100%;
+}
+
+a,
+a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.page {
+  padding: 1.5em 1em;
+  margin-bottom: 1em;
+
+  &:hover {
+    background-color: #d6deff;
+
+    span.extension {
+      background-color: #9eade7;
+    }
+  }
+
+  h3 {
+    margin: 0;
+    margin-bottom: 0.8em;
+  }
+}
+
+span.name {
+  text-decoration: underline 1px;
+}
+
+article {
+  padding: 0.4em 0.8em;
+
+  ul {
+    padding-left: 1.5em;
+
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 0.4em;
+  }
+}
+
+article.latest {
+  background-color: #d0efde;
+}
+
 main {
   width: min(800px, 100%);
 
@@ -25,16 +83,12 @@ main {
   font-family: "Ubuntu";
   font-size: 17px;
 
-  h3 span {
+  span.padding {
     padding: 0.2em 0.4em;
   }
 
   .extension {
     background-color: #d6deff;
-
-    span.highlight {
-      background-color: white;
-    }
   }
 
   .important {
@@ -51,31 +105,5 @@ main {
   span.refresh {
     background-color: #b6e3c8;
     padding: 0.25em;
-  }
-
-  article {
-    margin-block: 1.5em 4em;
-
-    video {
-      width: 100%;
-      margin-bottom: 0.5em;
-    }
-
-    p {
-      box-sizing: border-box;
-      padding-block: 0.75em;
-      padding-left: 0.5em;
-
-      margin-top: 0.5em;
-
-      span.key {
-        padding: 0.25em 0.5em;
-        background-color: #eee;
-        border-radius: 0.25em;
-        border: 2px solid black;
-
-        font-size: 16px;
-      }
-    }
   }
 }

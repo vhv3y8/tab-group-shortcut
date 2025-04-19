@@ -1,5 +1,5 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite"
-
 import zipPack from "vite-plugin-zip-pack"
 import manifest from "./public/manifest.json"
 
@@ -11,12 +11,14 @@ export default defineConfig(({ mode }) => {
       outDir: "../dist",
       assetsDir: ".", // puts assets into 'outDir/assetsDir'
       target: "es2022", // to use top-level await
+      emptyOutDir: true,
       rollupOptions: {
         input: {
           content: "src/content.js",
           background: "src/background.js",
+          home: "src/home/index.html",
           description: "src/description/index.html",
-          options: "src/options/options.html",
+          options: "src/options/index.html",
         },
         output: {
           entryFileNames: "[name].js", // applied to js files
@@ -34,5 +36,6 @@ export default defineConfig(({ mode }) => {
             }),
           ]
         : [],
+    test: {},
   }
 })

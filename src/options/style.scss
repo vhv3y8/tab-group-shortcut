@@ -1,0 +1,144 @@
+@use "_slider";
+
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu&display=swap");
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  box-sizing: border-box;
+  padding: 2rem;
+
+  display: flex;
+  justify-content: center;
+
+  font-size: inherit;
+}
+
+main {
+  width: min(800px, 100%);
+
+  display: flex;
+  flex-flow: column nowrap;
+
+  font-family: "Ubuntu";
+  font-size: 17px;
+
+  p.option {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+ul#optionList {
+  list-style: none;
+  padding-left: 0;
+
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1em;
+
+  li {
+    font-size: 1.1em;
+    padding-block: 0.5em;
+
+    & > label {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: center;
+
+      padding-block: 0.8em;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    p.description {
+      font-size: 0.9em;
+      color: #666;
+    }
+  }
+}
+
+span {
+  &.padding {
+    padding: 0.2em 0.4em;
+  }
+
+  &.extension {
+    background-color: #d6deff;
+  }
+
+  &.key {
+    padding: 0.25em 0.5em;
+    background-color: #eee;
+    border-radius: 0.25em;
+    border: 2px solid black;
+
+    font-size: 0.85em;
+  }
+
+  &.link {
+    padding: 0.25em 0.5em;
+    background-color: #eee;
+  }
+}
+
+section#listenCommand {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+
+  width: 100vw;
+  height: 100vh;
+
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+
+  display: none;
+
+  p {
+    color: white;
+    margin-block: 0.5em;
+    font-size: 1.6em;
+
+    &#listenCommandInput {
+      font-size: 30px;
+      min-width: 5em;
+      height: 1.5em;
+      background-color: white;
+      color: black;
+      border: 2px solid #999;
+      padding: 0.3em 0.7em;
+
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+
+button#setPageCommandBtn {
+  font-size: 1.1em;
+  font-family: "Ubuntu";
+  background: transparent;
+  padding: 0.4em 0.8em;
+
+  &:hover {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+      name="viewport"
+    />
+    <meta content="ie=edge" http-equiv="X-UA-Compatible" />
+    <title>Options | Tab Group Shortcut</title>
+
+    <link href="style.scss" rel="stylesheet" />
+  </head>
+  <body>
+    <main>
+      <h3>
+        <span class="extension padding">Tab Group Shortcut</span> Options Page
+      </h3>
+
+      <section id="listenCommand">
+        <p>Press ESC or Double-Click to Exit, ENTER to Save</p>
+        <p id="listenCommandInput"></p>
+        <p id="listenCommandMsg"></p>
+      </section>
+
+      <p style="text-decoration: underline 2px">
+        You have to refresh existing tabs to apply changes to them.
+      </p>
+
+      <ul id="optionList">
+        <li>
+          <label for="setPageCommandBtn">
+            <span>Set Page Command</span>
+
+            <button type="button" id="setPageCommandBtn">Ctrl+G</button>
+          </label>
+        </li>
+
+        <li>
+          <label for="showNamingPopup">
+            <span>Show Naming Popup after creating tab group</span>
+
+            <label class="switch" for="showNamingPopup">
+              <input id="showNamingPopup" type="checkbox" />
+              <span class="slider"></span>
+            </label>
+          </label>
+          <p class="description">
+            This enables you to set group name right away, only using keyboard.
+          </p>
+          <p class="description">
+            Only works when focusing page where page command is NOT restricted.
+          </p>
+        </li>
+
+        <li>
+          <label for="enableForceCommand">
+            <span
+              >Enable Force Command (default: <span class="key">Ctrl</span>
+              <span class="key">Q</span>)</span
+            >
+
+            <!--    /* From Uiverse.io by mrhyddenn */-->
+            <label class="switch" for="enableForceCommand">
+              <input id="enableForceCommand" type="checkbox" />
+              <span class="slider"></span>
+            </label>
+          </label>
+          <p class="description">
+            This command even works at pages where page command is restricted.
+          </p>
+          <p class="description">
+            You can change predefined command for this at
+            <span class="link">chrome://extensions/shortcuts</span>
+          </p>
+        </li>
+      </ul>
+    </main>
+
+    <script src="options.js" type="module"></script>
+  </body>
+</html>
