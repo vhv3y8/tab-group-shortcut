@@ -1,11 +1,34 @@
-import {
-  storageInitial,
-  storagePropertyChangeMaps,
-  mergeDeep,
-  renameProperty,
-  getSettings,
-} from "./helpers/storage"
+import { mergeDeep, renameProperty, getSettings } from "./helpers/storage"
 import { toggleSelectedTabs } from "./helpers/tabs"
+
+/**
+ * Default storage data.
+ */
+const storageInitial = {
+  settings: {
+    pageCommand: {
+      metaKey: false,
+      ctrlKey: true,
+      shiftKey: false,
+      key: "G",
+    },
+    openNamingPopup: false,
+    enableForceCommand: true,
+    openHomeOnExtensionUpdate: true,
+  },
+}
+
+/**
+ * Maps for updating storage object property name.
+ * Needed for old version users updating.
+ */
+export const storagePropertyChangeMaps = [
+  {
+    oldPath: "settings.turnOffForceCommand",
+    newPath: "settings.enableForceCommand",
+    transform: (v) => !v,
+  },
+]
 
 /**
  * When extension is installed or updated.
@@ -42,12 +65,15 @@ chrome.runtime.onInstalled.addListener((info) => {
           console.log("[update] currentData", currentData)
           console.log("[update] merged", merged)
         }
+
+        // open home page for update notes
+        if (merged.settings.openHomeOnExtensionUpdate) {
+          chrome.tabs.create({
+            url: chrome.runtime.getURL("home/index.html"),
+          })
+        }
       })
 
-      // open home page for update notes
-      chrome.tabs.create({
-        url: chrome.runtime.getURL("home/index.html"),
-      })
       break
     }
   }
@@ -88,7 +114,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendRes) => {
 
       // group / ungroup
       toggleSelectedTabs().then((isCreatingGroup) => {
-        // get settings to check showNamingPopup value
+        // get settings to check openNamingPopup value
         getSettings().then((settings) => {
           if (import.meta.env.MODE === "development") {
             console.log("[onMessage] [TOGGLE_GROUP] settings", settings)
@@ -99,7 +125,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendRes) => {
           }
 
           // send back boolean about showing naming popup prompt or not
-          sendRes(settings.showNamingPopup && isCreatingGroup)
+          sendRes(settings.openNamingPopup && isCreatingGroup)
         })
       })
       return true
@@ -131,10 +157,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendRes) => {
 chrome.commands.onCommand.addListener(async (command) => {
   if (command === "FORCE_TOGGLE_GROUP") {
     // check setting every time when command is matched
-    let { enableForceCommand, showNamingPopup } = await getSettings().then(
+    let { enableForceCommand, openNamingPopup } = await getSettings().then(
       (settings) => ({
         enableForceCommand: settings.enableForceCommand,
-        showNamingPopup: settings.showNamingPopup,
+        openNamingPopup: settings.openNamingPopup,
       }),
     )
 
@@ -145,7 +171,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       if (import.meta.env.MODE === "development")
         console.log("[onCommand] [FORCE] isCreatingGroup", isCreatingGroup)
 
-      if (showNamingPopup && isCreatingGroup) {
+      if (openNamingPopup && isCreatingGroup) {
         const focusedTab = await chrome.tabs
           .query({ active: true, currentWindow: true })
           .then((tabs) => tabs[0])

@@ -12,7 +12,8 @@ chrome.runtime
   })
 
 window.addEventListener("keydown", async (e) => {
-  console.log("parseToKeyboardObj(e)", parseToKeyboardObj(e))
+  if (import.meta.env.MODE === "development")
+    console.log("parseToKeyboardObj(e)", parseToKeyboardObj(e))
 
   if (
     !!pageCommand &&
@@ -26,15 +27,15 @@ window.addEventListener("keydown", async (e) => {
         pageCommand,
       )
 
-    const showNamingPopup = await chrome.runtime.sendMessage({
+    const openNamingPopup = await chrome.runtime.sendMessage({
       action: "TOGGLE_GROUP",
     })
-    if (showNamingPopup) {
+    if (openNamingPopup) {
       promptAndSetGroupName()
     }
 
     if (import.meta.env.MODE === "development")
-      console.log("[TOGGLE_GROUP response] showNamingPopup", showNamingPopup)
+      console.log("[TOGGLE_GROUP response] openNamingPopup", openNamingPopup)
   }
 })
 

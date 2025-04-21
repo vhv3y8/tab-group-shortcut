@@ -1,32 +1,4 @@
 /**
- * Default storage data.
- */
-export const storageInitial = {
-  settings: {
-    pageCommand: {
-      metaKey: false,
-      ctrlKey: true,
-      shiftKey: false,
-      key: "G",
-    },
-    showNamingPopup: false,
-    enableForceCommand: true,
-  },
-}
-
-/**
- * Maps for updating storage object property name.
- * Needed for old version users updating.
- */
-export const storagePropertyChangeMaps = [
-  {
-    oldPath: "settings.turnOffForceCommand",
-    newPath: "settings.enableForceCommand",
-    transform: (v) => !v,
-  },
-]
-
-/**
  * Helper function to merge storage object on extension update.
  * @param {object} defaults
  * @param {object} current

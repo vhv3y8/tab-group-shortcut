@@ -6,7 +6,11 @@ import {
 } from "../helpers/command"
 
 // name should be both 1. storage settings property name, 2. element id
-const switchSettingNames = ["enableForceCommand", "showNamingPopup"]
+const switchSettingNames = [
+  "enableForceCommand",
+  "openNamingPopup",
+  "openHomeOnExtensionUpdate",
+]
 for (const name of switchSettingNames) {
   bindInputElemToSettingValue(document.getElementById(name), name)
 }
