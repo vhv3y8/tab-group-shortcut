@@ -1,0 +1,81 @@
+import * as chromeStorage from "./chrome/storage"
+import * as chromeTabs from "./chrome/tabs"
+import * as chromeTabGroups from "./chrome/tabGroups"
+
+// extension install or update
+chrome.runtime.onInstalled.addListener(async (info) => {
+  switch (info.reason) {
+    case "install": {
+      // set initial storage
+      await chromeStorage.setStorage(chromeStorage.storageDefault)
+      // open tutorial page
+      await chromeTabs.openTutorialPage()
+      break
+    }
+    case "update": {
+      // do migration, and get result object to do stuff
+      const mergedResult = await chromeStorage.doStorageMigration()
+      // open update notes page based on setting
+      if (mergedResult.settings.openUpdateNotesPageOnExtensionUpdate) {
+        await chromeTabs.openUpdateNotesPage()
+      }
+      break
+    }
+  }
+  if (__DEV) console.log("[onInstalled] info", info)
+})
+
+// extension icon click
+chrome.action.onClicked.addListener(async () => {
+  await chromeTabs.openHomePage()
+})
+
+// handle messages sent from content script
+chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
+  switch (msg.action) {
+    case "GET_PAGE_COMMAND": {
+      // listener have to return true to make other side able to await for sendBack value
+      ;(async () => {
+        const settings = await chromeStorage.getSettings()
+        if (__DEV) console.log("[GET_PAGE_COMMAND: settings]", settings)
+        sendBack(settings.pageCommand)
+      })()
+      return true
+    }
+    case "TOGGLE_TABGROUP": {
+      // listener have to return true to make other side able to await for sendBack value
+      ;(async () => {
+        // group / ungroup
+        const haveCreatedGroup = await chromeTabs.toggleSelectedTabs()
+        // send back boolean that it should open naming popup or not
+        const settings = await chromeStorage.getSettings()
+        sendBack(haveCreatedGroup && settings.openNamingPopup)
+      })()
+      return true
+    }
+    case "SET_TABGROUP_NAME": {
+      chromeTabGroups.updateTabGroupName(sender.tab.groupId, msg.groupName)
+    }
+  }
+  if (__DEV) console.log("[onMessage] msg", msg)
+})
+
+// force toggle command
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === "FORCE_TOGGLE_GROUP") {
+    let settings = await chromeStorage.getSettings()
+    // if user set value false, it should not toggle
+    if (settings.enableForceCommand) {
+      // group / ungroup
+      const haveCreatedGroup = await chromeTabs.toggleSelectedTabs()
+
+      // fire open popup message based on setting
+      if (haveCreatedGroup && settings.openNamingPopup) {
+        const focusedTab = await chromeTabs.queryFocusedTab()
+        // send message to showing naming popup at focused tab
+        await chromeTabs.fireNamingPopupMsgToTab(focusedTab.id)
+      }
+    }
+  }
+  if (__DEV) console.log("[onCommand] command", command)
+})

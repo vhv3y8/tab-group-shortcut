@@ -13,3 +13,8 @@ Chrome Extension that adds a shortcut to group current tab.
 ```
 npm i && npm run build
 ```
+
+### Assets
+
+- Icons
+  - [https://fonts.google.com/icons](https://fonts.google.com/icons)

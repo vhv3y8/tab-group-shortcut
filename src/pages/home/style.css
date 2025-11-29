@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@import "../../common.css";
+
+@utility page {
+  @apply py-[1.5em] px-[1em] mb-[1em];
+
+  @variant hover {
+    @apply bg-[#d6deff];
+
+    span.extension {
+      @apply bg-[#9eade7];
+    }
+  }
+
+  h3 {
+    @apply m-0 mb-[0.8em];
+  }
+}

@@ -1,0 +1,5 @@
+- extension install
+  - open description page
+- extension update
+  - open description page if settings is true
+-

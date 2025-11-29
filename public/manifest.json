@@ -2,13 +2,13 @@
   "manifest_version": 3,
   "name": "Tab Group Shortcut",
   "version": "1.3",
-  "description": "Adds a shortcut to group current tab.",
+  "description": "Adds a shortcut to group selected tabs.",
   "icons": {
     "128": "icon128.png"
   },
   "permissions": ["tabs", "tabGroups", "storage"],
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "service-worker.js",
     "type": "module"
   },
   "content_scripts": [
@@ -17,7 +17,7 @@
       "js": ["content.js"]
     }
   ],
-  "options_page": "options/index.html",
+  "options_page": "pages/options/index.html",
   "commands": {
     "FORCE_TOGGLE_GROUP": {
       "suggested_key": {

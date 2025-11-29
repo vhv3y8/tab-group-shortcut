@@ -1,0 +1,7 @@
+- vite build zip 함수로 작성 v
+- 홈에서 링크 동작하도록 v
+- 옵션 페이지 동작하도록
+- 헬퍼들, 유틸들 단순화 및 해결
+- 폴드: shadow dom + fetch 태그 html, css
+- e2e 테스트 작성
+- 설명들 수정
