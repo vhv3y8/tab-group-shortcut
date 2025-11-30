@@ -9,18 +9,24 @@
 </head>
 
 <body>
-  <section>
-    <h3><span class="extension padding">Tab Group Shortcut</span> Update Notes</h3>
+  <section class="text-[1.1em]">
+    <h3><a href="../home/index.html" class="extension padding no-underline hover:underline">Tab Group Shortcut</a>
+      Extension Update Notes</h3>
 
-    <p style="margin-bottom: 1em">
-      You need to <span class="refresh">refresh</span> existing tabs to
-      apply <span class="refresh">updates</span> or
-      <span class="refresh">option changes</span> on them.
+
+    <p class="mt-4 mb-8 text-sm text-right">
+      Don't show this page at extension update?
+      <button type="button" id="disableOpenUpdateNotesPage"
+        class="ml-4 inline-flex flex-nowrap items-center gap-2 bg-(--bg) font-[Ubuntu] border-solid border-(--secondary) border-2 px-2 py-[.4em] shadow-[2px_2px_var(--secondary)] hover:cursor-pointer">
+        <img class="block dark:hidden w-4 h-4" src="../../assets/double-check-light.svg" alt="">
+        <img class="hidden dark:block w-4 h-4" src="../../assets/double-check-dark.svg" alt="">
+        <span class="text-sm text-(--primary)">Yes & Close</span>
+      </button>
     </p>
 
     <article class="latest">
       <p><strong>v1.3</strong></p>
-      <ul>
+      <ul class="updates">
         <li>
           Added Option to disable opening this page whenever the extension
           is updated.
@@ -37,7 +43,7 @@
 
     <article>
       <p><strong>v1.2</strong></p>
-      <ul>
+      <ul class="updates">
         <li>
           disabled description page showing up every time chrome updates.
         </li>
@@ -47,13 +53,15 @@
 
     <article>
       <p><strong>v1.1</strong></p>
-      <ul>
+      <ul class="updates">
         <li>added description page. click on extension icon to open.</li>
         <li>force toggle with 'Ctrl+Q' command.</li>
         <li>turning 'Ctrl+Q' command off is available at Options page.</li>
       </ul>
     </article>
   </section>
+
+  <script type="module" src="./script.js"></script>
 </body>
 
 </html>

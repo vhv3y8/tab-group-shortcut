@@ -5,3 +5,7 @@
 - 폴드: shadow dom + fetch 태그 html, css
 - e2e 테스트 작성
 - 설명들 수정
+
+---
+
+- 맥에서도 ctrl, shift로 선택?

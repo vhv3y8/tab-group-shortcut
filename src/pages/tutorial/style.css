@@ -1,0 +1,35 @@
+@import "../../common.css";
+
+h3 span {
+  @apply py-[0.2em] px-[0.4em];
+}
+
+article {
+  @apply mt-[1.5em] mb-[4em];
+
+  video {
+    @apply w-full;
+    @apply mb-[0.5em];
+  }
+
+  p {
+    box-sizing: border-box;
+
+    @apply box-border px-[0.5em] py-[.2em];
+    @apply mb-[0.6em];
+    @apply leading-[2.5];
+  }
+}
+
+.key {
+  @apply text-(--primary) bg-(--shadow);
+  @apply text-base;
+  @apply py-[0.25em] px-[0.5em];
+  @apply border-solid border-2 border-(--secondary) rounded-[0.25em];
+}
+
+.highlight {
+  @apply text-base;
+  @apply py-[0.4em] px-[0.5em];
+  @apply border-solid border-2 border-(--secondary);
+}

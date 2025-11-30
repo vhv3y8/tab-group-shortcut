@@ -11,7 +11,7 @@ Chrome Extension that adds a shortcut to group current tab.
 ### How to build
 
 ```
-npm i && npm run build
+pnpm i && pnpm build
 ```
 
 ### Assets

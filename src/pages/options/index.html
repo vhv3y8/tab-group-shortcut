@@ -11,12 +11,13 @@
   <link href="./style.css" rel="stylesheet" />
 </head>
 
-<body class="p-0">
+<body>
   <main>
     <!-- header -->
-    <h3>
-      <span class="extension padding">Tab Group Shortcut</span> Options Page
-    </h3>
+    <h2>
+      <a href="../home/index.html" class="extension padding no-underline hover:underline">Tab Group Shortcut</a> Options
+      Page
+    </h2>
 
     <!-- listen command  -->
     <section id="listenCommand">
@@ -26,15 +27,106 @@
     </section>
 
     <!-- information -->
-    <p style="text-decoration: underline 2px">
-      You have to refresh existing tabs to apply changes to them.
+    <p class="underline underline-offset-2">
+      You have to <span class="refresh">refresh</span> existing tabs to apply changes to them.
     </p>
 
-    <!-- options -->
-    <ul id="optionList">
+    <article>
       <h3>Group / Ungroup</h3>
 
       <!-- set page command -->
+      <section class="option">
+        <label for="setPageCommandBtn">
+          <span>Set Group / Ungroup Command</span>
+
+          <button type="button" id="setPageCommandBtn">Ctrl+G</button>
+        </label>
+      </section>
+
+      <!-- open naming popup -->
+      <section class="option">
+        <label for="openNamingPopup">
+          <span>Open Naming Popup after creating tab group</span>
+
+          <label class="switch" for="openNamingPopup">
+            <input id="openNamingPopup" type="checkbox" />
+            <span class="slider"></span>
+          </label>
+        </label>
+        <p class="description">
+          This enables you to set group name right away, only using keyboard.
+        </p>
+        <p class="description">
+          Only works when focusing tab where page command is NOT restricted.
+        </p>
+      </section>
+
+      <!-- enable force command -->
+      <section class="option">
+        <label for="enableForceCommand">
+          <span>Enable Force Command (default: <span class="key">Ctrl</span>
+            <span class="key">Q</span>)</span>
+
+          <!--    /* From Uiverse.io by mrhyddenn */-->
+          <label class="switch" for="enableForceCommand">
+            <input id="enableForceCommand" type="checkbox" />
+            <span class="slider"></span>
+          </label>
+        </label>
+        <p class="description">
+          This command even works at pages where page command is restricted.
+        </p>
+        <p class="description">
+          You can change predefined command for this at
+          <button type="button" class="link">
+            <!-- copy -->
+            <img src="../../assets/copy-light.svg" class="block dark:hidden" alt="">
+            <img src="../../assets/copy-dark.svg" class="hidden dark:block" alt="">
+            <!-- copied -->
+            <img src="../../assets/check-light.svg" class="block dark:hidden" alt="">
+            <img src="../../assets/check-dark.svg" class="hidden dark:block" alt="">
+            <span>chrome://extensions/shortcuts</span>
+          </button>
+        </p>
+      </section>
+    </article>
+
+    <article>
+      <h3>Fold / Unfold</h3>
+
+      <!-- enable page fold command -->
+      <section>
+        <label for="enableFoldCommand">
+          <span>Enable Fold / Unfold Command</span>
+
+          <!-- /* From Uiverse.io by mrhyddenn */ -->
+          <label class="switch" for="enableForceCommand">
+            <input id="enableForceCommand" type="checkbox" />
+            <span class="slider"></span>
+          </label>
+        </label>
+      </section>
+
+      <!--  -->
+      <section>
+        <label for="setPageFoldCommandBtn">
+          <span>Enable Fold / Unfold Command</span>
+
+          <label class="switch" for="enableFoldCommand">
+            <input id="enableFoldCommand" type="checkbox" />
+            <span class="slider"></span>
+          </label>
+        </label>
+      </section>
+      <!-- TODO... -->
+    </article>
+    <!-- TODO... -->
+
+    <!-- options -->
+    <!-- <ul id="optionList">
+      <h3>Group / Ungroup</h3>
+
+
       <li>
         <label for="setPageCommandBtn">
           <span>Set Group/Ungroup Command</span>
@@ -43,7 +135,6 @@
         </label>
       </li>
 
-      <!-- open naming popup -->
       <li>
         <label for="openNamingPopup">
           <span>Open Naming Popup after creating tab group</span>
@@ -61,13 +152,12 @@
         </p>
       </li>
 
-      <!-- enable force command -->
       <li>
         <label for="enableForceCommand">
           <span>Enable Force Command (default: <span class="key">Ctrl</span>
             <span class="key">Q</span>)</span>
 
-          <!--    /* From Uiverse.io by mrhyddenn */-->
+          
           <label class="switch" for="enableForceCommand">
             <input id="enableForceCommand" type="checkbox" />
             <span class="slider"></span>
@@ -84,7 +174,6 @@
 
       <h3>Fold / Unfold</h3>
 
-      <!-- page fold command -->
       <li>
         <label for="enableFoldCommand">
           <span>Enable Fold / Unfold Command</span>
@@ -96,9 +185,8 @@
         </label>
       </li>
 
-      <h3>Misc</h3>
+      <h3>Others</h3>
 
-      <!-- extension page dark mode -->
       <li>
         <label for="darkmode">
           <span>Darkmode on extension pages? (options, update notes, ..)</span>
@@ -110,7 +198,6 @@
         </label>
       </li>
 
-      <!-- open update notes page -->
       <li>
         <label for="openUpdateNotesPageOnExtensionUpdate">
           <span>Open Update notes page when extension is Updated?</span>
@@ -121,7 +208,7 @@
           </label>
         </label>
       </li>
-    </ul>
+    </ul> -->
   </main>
 
   <script src="options.js" type="module"></script>

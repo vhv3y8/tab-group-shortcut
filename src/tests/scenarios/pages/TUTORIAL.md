@@ -1,13 +1,13 @@
-# Description page
+# Tutorial page
 
 ### Videos
 
-- GIVEN at description page
+- GIVEN at tutorial page
 - WHEN after loaded
 - THEN start all video
 
 ---
 
-- GIVEN at description page
+- GIVEN at tutorial page
 - WHEN clicks some video to pause/resume
 - THEN all videos should pause/resume together

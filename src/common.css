@@ -1,54 +1,113 @@
+/* use tailwind css without preflight (bultin base) */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* get assets */
+
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu&display=swap");
 
-/* Layout */
+/* design system */
 
-html,
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    @slot;
+  }
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+}
+
+/* light */
+@theme {
+  --bg: #fff;
+  --primary: #000;
+  /* --secondary: #666; */
+  --secondary: #444;
+  --shadow: #eee;
+
+  --extension: #d6deff;
+  --important: #ffc3ad;
+  --refresh: #b6e3c8;
+}
+/* dark */
+@layer theme {
+  :root,
+  :host {
+    @variant dark {
+      --bg: #282828;
+      --primary: #eee;
+      --secondary: #888;
+      --shadow: #323232;
+
+      /* --extension: #555f8a;
+      --important: #8a594a;
+      --refresh: #4a7a5d; */
+      /* --extension: #4a5070;
+      --important: #704a3f;
+      --refresh: #3f614c; */
+      /* --extension: #2f354f;
+      --important: #4f322b;
+      --refresh: #244035; */
+      --extension: #3c4260;
+      --important: #5f3c33;
+      --refresh: #335646;
+    }
+  }
+}
+
+/* must apply explicitly. extension pages at chrome have font-size: 75%; applied at body tag. */
 body {
-  margin: 0;
-  padding: 0;
-  /* font-size: 1rem; */
+  @apply text-base;
 }
 
-body {
-  box-sizing: border-box;
-  padding: 2rem;
+/* base stuff */
 
-  display: flex;
-  justify-content: center;
-}
+@layer base {
+  /* layouts */
 
-main {
-  width: min(800px, 100%);
+  html,
+  body {
+    @apply m-0 p-0;
+    @apply bg-(--bg) text-(--primary);
+  }
 
-  display: flex;
-  flex-flow: column nowrap;
+  body {
+    @apply min-h-screen;
+    @apply flex justify-center;
+    @apply box-border p-8 pb-5;
+  }
 
-  padding-inline: 2em;
+  main {
+    @apply w-[min(800px,100%)];
+    @apply flex flex-col flex-nowrap;
+    @apply px-[2em];
+    @apply font-[Ubuntu] text-base;
+  }
 
-  font-family: "Ubuntu";
-  font-size: 17px;
-}
+  /* common tags */
 
-/* Common Tag */
+  h2 {
+    @apply mt-[0.5em] mb-[1em];
+  }
 
-h2 {
-  margin-top: 0.5em;
-  margin-bottom: 1.2em;
-}
+  p {
+    @apply my-[0.5em];
+  }
 
-p {
-  margin-block: 0.5em;
-}
+  hr {
+    @apply w-full;
+    @apply border-t border-solid border-(--secondary);
+  }
 
-hr {
-  border-top: 1px solid #999;
-  width: 100%;
-}
+  a,
+  a:visited {
+    @apply text-inherit no-underline;
+  }
 
-a,
-a:visited {
-  color: inherit;
-  text-decoration: none;
+  hr {
+    @apply my-6;
+  }
 }
 
 /* Classes */
@@ -58,25 +117,18 @@ a:visited {
 }
 
 .extension {
-  background-color: #d6deff;
+  @apply bg-(--extension) text-(--primary);
 }
 
 .important {
-  background-color: #ffc3ad;
+  @apply bg-(--important) text-(--primary);
 }
 
-span.padding {
-  padding: 0.2em 0.4em;
+.padding {
+  @apply px-[0.4em] py-[0.2em];
 }
 
-span.highlight {
-  padding: 0.25em 0.5em;
-  border: 2px solid black;
-
-  font-size: 16px;
-}
-
-span.refresh {
-  background-color: #b6e3c8;
-  padding: 0.25em;
+.refresh {
+  @apply bg-(--refresh) text-(--primary);
+  @apply p-[.25em];
 }

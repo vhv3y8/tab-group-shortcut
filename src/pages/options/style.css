@@ -1,32 +1,5 @@
-@import "tailwindcss";
+@import "../../common.css";
 @import "./_slider.css";
-
-@import url("https://fonts.googleapis.com/css2?family=Ubuntu&display=swap");
-
-html,
-body {
-  @apply m-0 p-0;
-}
-
-body {
-  box-sizing: border-box;
-  padding: 2rem;
-
-  display: flex;
-  justify-content: center;
-
-  font-size: inherit;
-}
-
-main {
-  width: min(800px, 100%);
-
-  display: flex;
-  flex-flow: column nowrap;
-
-  font-family: "Ubuntu";
-  font-size: 17px;
-}
 
 p.option {
   display: flex;

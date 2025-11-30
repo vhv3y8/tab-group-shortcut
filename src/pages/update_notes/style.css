@@ -1,5 +1,21 @@
-@import "tailwindcss";
 @import "../../common.css";
+
+/* design system */
+
+/* light */
+@theme {
+  --latest-bg: #d0efde;
+}
+/* dark */
+@layer theme {
+  :root,
+  :host {
+    @variant dark {
+      /* --latest-bg: #426b5b; */
+      --latest-bg: #2c4f44;
+    }
+  }
+}
 
 article {
   padding: 0.4em 0.8em;
@@ -13,6 +29,12 @@ article {
   }
 
   &.latest {
-    background-color: #d0efde;
+    /* background-color: #d0efde; */
+    @apply text-(--primary) bg-(--latest-bg);
   }
+}
+
+.updates {
+  @apply m-0 mb-4;
+  @apply pr-4;
 }

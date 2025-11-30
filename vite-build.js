@@ -38,6 +38,10 @@ function createHtmlConfig(input) {
       target: "es2022", // to use top-level await
       rollupOptions: {
         input,
+        output: {
+          assetFileNames: "[name].[ext]",
+          entryFileNames: "[name].js",
+        },
       },
     },
     css: {
@@ -124,10 +128,10 @@ async function createExtensionZip() {
 
 const jsEntries = ["src/content-script/content.js", "src/service-worker.js"]
 const htmlEntries = [
-  "src/pages/home/index.html",
-  "src/pages/description/index.html",
-  "src/pages/options/index.html",
-  "src/pages/update_notes/index.html",
+  { home: "src/pages/home/index.html" },
+  { tutorial: "src/pages/tutorial/index.html" },
+  { options: "src/pages/options/index.html" },
+  { update_notes: "src/pages/update_notes/index.html" },
 ]
 
 async function run() {
