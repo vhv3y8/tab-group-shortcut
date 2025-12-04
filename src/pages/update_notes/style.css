@@ -11,30 +11,39 @@
   :root,
   :host {
     @variant dark {
-      /* --latest-bg: #426b5b; */
       --latest-bg: #2c4f44;
     }
   }
 }
 
-article {
-  padding: 0.4em 0.8em;
-
-  ul {
-    padding-left: 1.5em;
-
-    display: flex;
-    flex-flow: column nowrap;
-    gap: 0.4em;
-  }
-
-  &.latest {
-    /* background-color: #d0efde; */
-    @apply text-(--primary) bg-(--latest-bg);
+@layer base {
+  h3 {
+    margin: 0;
   }
 }
 
-.updates {
+main {
+  width: min(700px, 100%);
+}
+
+article {
+  /* padding: 0.4em 0.8em; */
+  @apply py-[0.4em] px-[0.8em];
+}
+
+/* utilities */
+
+@utility latest {
+  @apply text-(--primary) bg-(--latest-bg);
+}
+
+@utility updates {
   @apply m-0 mb-4;
-  @apply pr-4;
+  @apply pl-[1.5em] pr-4;
+
+  @apply flex flex-col flex-nowrap gap-[0.4em];
+
+  li {
+    @apply leading-[1.7];
+  }
 }

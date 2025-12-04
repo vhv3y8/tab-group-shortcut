@@ -23,6 +23,7 @@ const commonConfig = {
   root: "src",
   build: {
     outDir: "../dist2",
+    sourcemap: !isProduction,
     rollupOptions: {
       output: {},
     },
@@ -36,6 +37,7 @@ function createHtmlConfig(input) {
     build: {
       assetsDir: ".", // puts assets into 'outDir/assetsDir'
       target: "es2022", // to use top-level await
+      assetsInlineLimit: 0, // no inline base64 for asset files
       rollupOptions: {
         input,
         output: {

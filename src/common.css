@@ -1,11 +1,14 @@
-/* use tailwind css without preflight (bultin base) */
+/* use tailwind css without preflight (builtin base) */
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
 /* get assets */
 
-@import url("https://fonts.googleapis.com/css2?family=Ubuntu&display=swap");
+@font-face {
+  font-family: "Ubuntu";
+  src: url("assets/fonts/Ubuntu-Regular.ttf");
+}
 
 /* design system */
 
@@ -73,13 +76,17 @@ body {
   }
 
   body {
-    @apply min-h-screen;
+    @apply min-h-screen overflow-y-scroll;
     @apply flex justify-center;
     @apply box-border p-8 pb-5;
+
+    /* @variant selection {
+      @apply bg-(--primary) text-(--bg);
+    } */
   }
 
   main {
-    @apply w-[min(800px,100%)];
+    width: min(800px, 100%);
     @apply flex flex-col flex-nowrap;
     @apply px-[2em];
     @apply font-[Ubuntu] text-base;
@@ -110,25 +117,27 @@ body {
   }
 }
 
-/* Classes */
+/* utilities */
 
+/* @utility underline-a */
+/* 2px? */
 .underline {
   text-decoration: underline 1px;
 }
 
-.extension {
+@utility extension {
   @apply bg-(--extension) text-(--primary);
 }
 
-.important {
+@utility important {
   @apply bg-(--important) text-(--primary);
 }
 
-.padding {
-  @apply px-[0.4em] py-[0.2em];
-}
-
-.refresh {
+@utility refresh {
   @apply bg-(--refresh) text-(--primary);
   @apply p-[.25em];
+}
+
+@utility padding {
+  @apply px-[0.4em] py-[0.2em];
 }

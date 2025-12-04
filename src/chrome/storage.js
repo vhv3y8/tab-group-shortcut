@@ -1,15 +1,34 @@
 export const storageDefault = {
   settings: {
+    // group / ungroup
     pageCommand: {
       metaKey: false,
       ctrlKey: true,
+      altKey: false,
       shiftKey: false,
       key: "G",
     },
     openNamingPopup: false,
     enableForceCommand: true,
+    // fold / unfold
+    enableFoldCommand: false,
+    foldCommand: {
+      metaKey: false,
+      ctrlKey: true,
+      altKey: false,
+      shiftKey: true,
+      key: "G",
+    },
+    foldPopup: {
+      positionNumber: 1,
+      fontSizePx: 16,
+    },
+    // others
+    explicitDarkMode: {
+      enable: false,
+      darkmode: true,
+    },
     openUpdateNotesPageOnExtensionUpdate: true,
-    darkmode: false,
   },
 }
 

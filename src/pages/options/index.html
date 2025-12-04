@@ -11,26 +11,106 @@
   <link href="./style.css" rel="stylesheet" />
 </head>
 
-<body>
+<body class="pb-16">
   <main>
-    <!-- header -->
-    <h2>
-      <a href="../home/index.html" class="extension padding no-underline hover:underline">Tab Group Shortcut</a> Options
-      Page
-    </h2>
+    <!-- common listen command section  -->
+    <section id="listenCommand"
+      class="fixed inset-0 z-50 w-screen h-screen flex-col flex-nowrap justify-center items-center hidden">
+      <!-- background -->
+      <div class="w-full h-full blur-[2px] bg-[rgba(0,0,0,0.5)]"></div>
+      <p class="fixed top-0">Click Cancel button or Double click background to Exit</p>
+      <!-- popup -->
+      <section id="listenPopup" class="p-4 bg-(--shadow) shadow-[20px_20px_var(--shadow)]">
+        <h3 id="listenCommandPopupName">Group / Ungroup Command</h3>
 
-    <!-- listen command  -->
-    <section id="listenCommand">
-      <p>Press ESC or Double-Click to Exit, ENTER to Save</p>
-      <p id="listenCommandInput"></p>
-      <p id="listenCommandMsg"></p>
+        <!-- listen -->
+        <div>
+          <p class="text-center text-lg">Listening...</p>
+          <!-- listen representation -->
+          <div id="listenCommandRepresentation" class="in-[.notAppropriate]:opacity-50">
+            <!-- mac -->
+            <p class="in-[.mac]:block hidden m-0 p-[0.4em]">
+              <!-- command -->
+              <span class="in-[.metaKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/command-light.svg" alt="" class="inline dark:hidden w-6 h-6">
+                <img src="../../assets/icons/material/keys/command-dark.svg" alt="" class="hidden dark:inline w-6 h-6">
+                <span> + </span>
+              </span>
+              <!-- option -->
+              <span class="in-[.altKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/option-light.svg" alt="" class="inline dark:hidden w-6 h-6">
+                <img src="../../assets/icons/material/keys/option-dark.svg" alt="" class="hidden dark:inline w-6 h-6">
+                <span> + </span>
+              </span>
+              <!-- shift -->
+              <span class="in-[.shiftKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/shift-light.svg" alt="" class="inline dark:hidden w-6 h-6">
+                <img src="../../assets/icons/material/keys/shift-dark.svg" alt="" class="hidden dark:inline w-6 h-6">
+                <span> + </span>
+              </span>
+              <!-- contol -->
+              <span class="in-[.ctrlKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/control-light.svg" alt="" class="inline dark:hidden w-6 h-6">
+                <img src="../../assets/icons/material/keys/control-dark.svg" alt="" class="hidden dark:inline w-6 h-6">
+                <span> + </span>
+              </span>
+              <!-- key -->
+              <span class="inputKey"></span>
+            </p>
+            <!-- window -->
+            <p class="in-[.window]:block hidden m-0 p-[0.4em]">
+              <!-- win -->
+              <span class="in-[.metaKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/win-light.svg" alt="" class="inline dark:hidden w-6 h-6">
+                <img src="../../assets/icons/material/keys/win-dark.svg" alt="" class="hidden dark:inline w-6 h-6">
+                <span> + </span>
+              </span>
+              <!-- ctrl -->
+              <span class="in-[.ctrlKey]:inline hidden">Ctrl + </span>
+              <!-- alt -->
+              <span class="in-[.altKey]:inline hidden">Alt + </span>
+              <!-- shift -->
+              <span class="in-[.shiftKey]:inline hidden">Shift + </span>
+              <!-- key -->
+              <span class="inputKey"></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- cancel save buttons -->
+        <p>
+          <!-- cancel button -->
+          <button type="button" id="listenCancelBtn" class="">
+
+          </button>
+          <!-- save button -->
+          <button type="button" id="listenSaveBtn"
+            class="in-[.notAppropriate]:pointer-events-none in-[.notAppropriate]:opacity-50">
+
+          </button>
+        </p>
+        <!-- <p id="listenCommandInput"></p>
+        <p id="listenCommandMsg"></p> -->
+      </section>
     </section>
 
-    <!-- information -->
+    <!-- fold popup preview section -->
+    <section id="foldPopupPreview">
+    </section>
+
+    <!-- header -->
+    <h3 class="mt-0 mb-2 text-xl">
+      <a href="../home/index.html" class="extension padding no-underline hover:underline hover:underline-offset-2">Tab
+        Group Shortcut</a> Options
+      Page
+    </h3>
+
     <p class="underline underline-offset-2">
-      You have to <span class="refresh">refresh</span> existing tabs to apply changes to them.
+      If you want to apply <span class="refresh">changes like command</span> to <span class="refresh">existing
+        tabs</span>, you have to <span class="refresh">refresh</span> them!
     </p>
 
+    <!-- group / ungroup -->
     <article>
       <h3>Group / Ungroup</h3>
 
@@ -39,7 +119,50 @@
         <label for="setPageCommandBtn">
           <span>Set Group / Ungroup Command</span>
 
-          <button type="button" id="setPageCommandBtn">Ctrl+G</button>
+          <button type="button" id="setPageCommandBtn">
+            <!-- mac -->
+            <p class="in-[.mac]:block hidden m-0 p-[0.4em]">
+              <!-- command -->
+              <span class="in-[.metaKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/command-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/command-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+              </span>
+              <!-- option -->
+              <span class="in-[.altKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/option-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/option-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+              </span>
+              <!-- shift -->
+              <span class="in-[.shiftKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/shift-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/shift-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+              </span>
+              <!-- control -->
+              <span class="in-[.ctrlKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/control-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/control-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+              </span>
+              <!-- key -->
+              <span class="inputKey"></span>
+            </p>
+            <!-- window -->
+            <p class="in-[.window]:block hidden m-0 p-[0.4em]">
+              <!-- win -->
+              <span class="in-[.metaKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/win-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/win-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+                <span> + </span>
+              </span>
+              <!-- ctrl -->
+              <span class="in-[.ctrlKey]:inline hidden">Ctrl + </span>
+              <!-- alt -->
+              <span class="in-[.altKey]:inline hidden">Alt + </span>
+              <!-- shift -->
+              <span class="in-[.shiftKey]:inline hidden">Shift + </span>
+              <!-- key -->
+              <span class="inputKey"></span>
+            </p>
+          </button>
         </label>
       </section>
 
@@ -53,11 +176,15 @@
             <span class="slider"></span>
           </label>
         </label>
+
         <p class="description">
-          This enables you to set group name right away, only using keyboard.
+          When enabled, opens popup to set group name after creating tab group.
         </p>
         <p class="description">
-          Only works when focusing tab where page command is NOT restricted.
+          You can choose to set name or not with <span class="key">Enter</span> and <span class="key">Esc</span>.
+        </p>
+        <p class="description">
+          Only works when focusing a tab that command is NOT restricted.
         </p>
       </section>
 
@@ -67,58 +194,175 @@
           <span>Enable Force Command (default: <span class="key">Ctrl</span>
             <span class="key">Q</span>)</span>
 
-          <!--    /* From Uiverse.io by mrhyddenn */-->
+          <!-- /* From Uiverse.io by mrhyddenn */-->
           <label class="switch" for="enableForceCommand">
             <input id="enableForceCommand" type="checkbox" />
             <span class="slider"></span>
           </label>
         </label>
+
         <p class="description">
-          This command even works at pages where page command is restricted.
+          This command even works at pages where page command is restricted (like chrome:// pages).
         </p>
         <p class="description">
           You can change predefined command for this at
           <button type="button" class="link">
             <!-- copy -->
-            <img src="../../assets/copy-light.svg" class="block dark:hidden" alt="">
-            <img src="../../assets/copy-dark.svg" class="hidden dark:block" alt="">
+            <img src="../../assets/icons/material/copy-light.svg" class="inline-block dark:hidden" alt="">
+            <img src="../../assets/icons/material/copy-dark.svg" class="hidden dark:inline-block" alt="">
             <!-- copied -->
-            <img src="../../assets/check-light.svg" class="block dark:hidden" alt="">
-            <img src="../../assets/check-dark.svg" class="hidden dark:block" alt="">
+            <img src="../../assets/icons/material/check-light.svg" class="inline-block dark:hidden" alt="">
+            <img src="../../assets/icons/material/check-dark.svg" class="hidden dark:inline-block" alt="">
             <span>chrome://extensions/shortcuts</span>
           </button>
+          <a href="chrome://extensions/shortcuts" target="_blank">chrome://extensions/shortcuts</a>
         </p>
+
+        <p>그냥 이걸 Ctrl+G로 못하는 이유??</p>
       </section>
     </article>
 
+    <!-- fold / unfold -->
     <article>
       <h3>Fold / Unfold</h3>
 
       <!-- enable page fold command -->
-      <section>
+      <section class="option">
         <label for="enableFoldCommand">
           <span>Enable Fold / Unfold Command</span>
 
           <!-- /* From Uiverse.io by mrhyddenn */ -->
-          <label class="switch" for="enableForceCommand">
-            <input id="enableForceCommand" type="checkbox" />
-            <span class="slider"></span>
-          </label>
-        </label>
-      </section>
-
-      <!--  -->
-      <section>
-        <label for="setPageFoldCommandBtn">
-          <span>Enable Fold / Unfold Command</span>
-
           <label class="switch" for="enableFoldCommand">
             <input id="enableFoldCommand" type="checkbox" />
             <span class="slider"></span>
           </label>
         </label>
       </section>
+
+      <!--  -->
+      <section class="option">
+        <label for="setPageFoldCommandBtn">
+          <span>Set Fold / Unfold Command</span>
+
+          <button type="button" id="setPageFoldCommandBtn">
+            <!-- mac -->
+            <p class="in-[.mac]:block hidden m-0 p-[0.4em]">
+              <!-- command -->
+              <span class="in-[.metaKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/command-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/command-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+              </span>
+              <!-- option -->
+              <span class="in-[.altKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/option-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/option-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+              </span>
+              <!-- shift -->
+              <span class="in-[.shiftKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/shift-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/shift-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+              </span>
+              <!-- control -->
+              <span class="in-[.ctrlKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/control-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/control-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+              </span>
+              <!-- key -->
+              <span class="inputKey"></span>
+            </p>
+            <!-- window -->
+            <p class="in-[.window]:block hidden m-0 p-[0.4em]">
+              <!-- win -->
+              <span class="in-[.metaKey]:inline hidden">
+                <img src="../../assets/icons/material/keys/win-light.svg" alt="" class="inline dark:hidden w-4 h-4">
+                <img src="../../assets/icons/material/keys/win-dark.svg" alt="" class="hidden dark:inline w-4 h-4">
+                <span> + </span>
+              </span>
+              <!-- ctrl -->
+              <span class="in-[.ctrlKey]:inline hidden">Ctrl + </span>
+              <!-- alt -->
+              <span class="in-[.altKey]:inline hidden">Alt + </span>
+              <!-- shift -->
+              <span class="in-[.shiftKey]:inline hidden">Shift + </span>
+              <!-- key -->
+              <span class="inputKey"></span>
+            </p>
+          </button>
+        </label>
+      </section>
       <!-- TODO... -->
+
+      <!--  -->
+      <article>
+        <h4>Fold Unfold Popup Appearance</h4>
+
+        <section class="option">
+          <label>
+            <span>Popup Position</span>
+
+            <div id="positions">
+              <input type="radio" name="foldPopupPosition" id="">
+            </div>
+          </label>
+        </section>
+
+        <section class="option">
+          <label for="foldPopupFontSize">
+            <span>Popup Font Size</span>
+
+            <input type="range" name="foldPopupFontSize" id="foldPopupFontSize">
+          </label>
+          <p class="description">
+            Sizes like width, height are affected by the font size.
+          </p>
+        </section>
+
+        <section class="option">
+          <label for="foldPopupFontSize">
+            <span>Popup Darkmode</span>
+
+            <input type="range" name="foldPopupFontSize" id="foldPopupFontSize">
+          </label>
+          <p class="description">
+            Sizes like width, height are affected by the font size.
+          </p>
+        </section>
+      </article>
+    </article>
+
+    <!-- others -->
+    <article>
+      <h3>Others</h3>
+
+      <section class="option">
+        <label for="darkmode">
+          <span>Explicit lightmode / darkmode on this extension's pages?</span>
+
+          <div>
+            <input type="radio" name="explicitDarkMode" id="" value="Automatic">
+            <input type="radio" name="explicitDarkMode" id="" value="Light">
+            <input type="radio" name="explicitDarkMode" id="" value="Dark">
+          </div>
+        </label>
+
+        <p class="description">
+          By default all pages in this extension follows system preference. (CSS prefers-color-scheme)
+        </p>
+        <p class="description">
+          If you want to
+        </p>
+      </section>
+
+      <section class="option">
+        <label for="openUpdateNotesPageOnExtensionUpdate">
+          <span>Open update notes page when extension is updated?</span>
+
+          <label class="switch" for="openUpdateNotesPageOnExtensionUpdate">
+            <input id="openUpdateNotesPageOnExtensionUpdate" type="checkbox" />
+            <span class="slider"></span>
+          </label>
+        </label>
+      </section>
     </article>
     <!-- TODO... -->
 

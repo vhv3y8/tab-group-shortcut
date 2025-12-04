@@ -1,7 +1,7 @@
-const container = document.createElement("div")
-document.body.appendChild(container)
-
-// create shadow dom
-const shadow = box.attachShadow({ mode: "open" })
-const html = await fetch("./component.html").then((r) => r.text())
-shadow.innerHTML = html
+export async function attachAndCreateFoldPopup(shadowHost) {
+  // create shadow dom
+  const shadow = shadowHost.attachShadow({ mode: "open" })
+  // TODO
+  const html = await fetch("fold/component.html").then((r) => r.text())
+  shadow.innerHTML = html
+}

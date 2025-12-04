@@ -22,7 +22,7 @@ chrome.runtime.onInstalled.addListener(async (info) => {
       break
     }
   }
-  if (__DEV) console.log("[onInstalled] info", info)
+  if (__DEV) console.log("[tab group shortcut: onInstalled] info", info)
 })
 
 // extension icon click
@@ -37,7 +37,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
       // listener have to return true to make other side able to await for sendBack value
       ;(async () => {
         const settings = await chromeStorage.getSettings()
-        if (__DEV) console.log("[GET_PAGE_COMMAND: settings]", settings)
+        if (__DEV)
+          console.log(
+            "[tab group shortcut: GET_PAGE_COMMAND: settings]",
+            settings,
+          )
         sendBack(settings.pageCommand)
       })()
       return true
@@ -57,7 +61,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
       chromeTabGroups.updateTabGroupName(sender.tab.groupId, msg.groupName)
     }
   }
-  if (__DEV) console.log("[onMessage] msg", msg)
+  if (__DEV) console.log("[tab group shortcut: onMessage] msg", msg)
 })
 
 // force toggle command
@@ -77,5 +81,5 @@ chrome.commands.onCommand.addListener(async (command) => {
       }
     }
   }
-  if (__DEV) console.log("[onCommand] command", command)
+  if (__DEV) console.log("[tab group shortcut: onCommand] command", command)
 })

@@ -1,0 +1,23 @@
+THIRD PARTY LICENSES :
+
+========== Fonts ==========
+
+Ubuntu
+Copyright 2010,2011 Canonical Ltd.
+License: UBUNTU FONT LICENCE Version 1.0
+License File: licenses/UBUNTU-FONT-LICENSE-1.0.txt
+
+========== Icons ==========
+
+Material Symbols (with file names changed)
+By: Google
+License: Apache License 2.0
+License File: licenses/Apache-License-2.0.txt
+
+========== CSS ==========
+
+Slider checkbox at options page (src/pages/options/_slider.css, modified from original)
+https://uiverse.io/mrhyddenn/old-fish-66
+By: mrhyddenn  
+License: MIT License
+License File: licenses/MIT-License.txt

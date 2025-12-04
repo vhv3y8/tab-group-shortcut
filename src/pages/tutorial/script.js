@@ -1,4 +1,21 @@
+function userIsMac() {
+  if (navigator.userAgent) {
+    return navigator.userAgent.toUpperCase().includes("MAC")
+  } else {
+    return navigator.platform.toUpperCase().includes("MAC")
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  // change representation for mac
+  if (userIsMac()) {
+    const cmdSpans = document.querySelectorAll(".ctrlOrCmd")
+    cmdSpans.forEach((span) => {
+      span.textContent = "Cmd"
+    })
+  }
+
+  // handle video tags
   const videos = document.querySelectorAll("video")
 
   // set handlers so that every video tags toggle together

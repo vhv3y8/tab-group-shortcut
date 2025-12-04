@@ -1,222 +1,294 @@
 import * as chromeStorage from "../../chrome/storage"
+import {
+  isAppropriateCommandInput,
+  createCommandInput,
+  createCommandRepresenterFor,
+  userIsMac,
+} from "./command"
 
-// listening command stuff
-let isListeningCommand = false
-let currentCommandInput = {}
-
-// additional elements
-let elems = {
-  setPageCommandBtn: undefined,
-  listenCommandSection: undefined,
+const CMD_OPT_NAME = {
+  PAGE: "pageCommand",
+  FOLD: "foldCommand",
 }
 
-// initialize ui
+// states for listening command
+let isListeningCommand = false
+let currentCommandInput = {}
+let currentListenOptionName = CMD_OPT_NAME.PAGE
+
+// common elements to handle
+let elems = {
+  listenCommandSection: undefined,
+  foldPopupPreviewSection: undefined,
+}
+
+// initialize variables and ui with settings value
 document.addEventListener("DOMContentLoaded", async (e) => {
   const settings = await chromeStorage.getSettings()
+  const pageCommand = settings.pageCommand
+  const foldCommand = settings.foldCommand
 
-  // initialize checkbox ui
+  // initialize variables
+  currentCommandInput = pageCommand
 
-  // should be both storage settings property name and options html input checkbox id
+  // 1. initialize checkbox ui
   const boolOptions = [
-    "enableForceCommand",
     "openNamingPopup",
+    "enableForceCommand",
+    "enableFoldCommand",
     "openUpdateNotesPageOnExtensionUpdate",
-    "darkmode",
   ]
-  const nameToCheckboxMap = new Map()
-  for (const optionName of boolOptions) {
-    nameToCheckboxMap.set(optionName, document.getElementById(optionName))
+  const nameToCheckboxElemMap = new Map()
+  for (const option of boolOptions) {
+    // should be both storage settings property name, and options html input checkbox id
+    const id = option
+    nameToCheckboxElemMap.set(option, document.getElementById(id))
   }
-  // set checked and listeners
-  for (const optionName of boolOptions) {
-    const checkbox = nameToCheckboxMap.get(optionName)
-    if (settings[optionName]) {
+  // set initial checked value and set handlers
+  for (const option of boolOptions) {
+    const checkbox = nameToCheckboxElemMap.get(option)
+    // set checked value
+    if (settings[option]) {
       checkbox.checked = true
     }
-    // set checkbox toggle listener
+    // set checkbox toggle handler
     checkbox.addEventListener("change", async (e) => {
-      // get setting every time when switch is clicked
-      // so that this doesn't overwrite other values changed elsewhere
       let settings = await chromeStorage.getSettings()
-      settings[optionName] = e.target.checked
+      settings[option] = e.target.checked
       await chromeStorage.setSettings(settings)
     })
   }
+
+  //
+  document
+    .getElementById("enableFoldCommand")
+    .addEventListener("change", (e) => {
+      if (!e.target.checked) {
+        // TODO
+      }
+    })
+
+  // 2. initialize non-checkbox ui
+
+  // 1) command stuff
+  const isMac = userIsMac()
+
+  // set group / ungroup command
+  const setPageCommandBtn = document.getElementById("setPageCommandBtn")
+  // show initial group / ungroup command value
+  createCommandRepresenterFor({ container: setPageCommandBtn, isMac })(
+    pageCommand,
+  )
+  // set click handler
+  setPageCommandBtn.addEventListener("click", () => {
+    currentListenOptionName = CMD_OPT_NAME.PAGE
+    toggleListenCommandPopup()
+  })
+
+  // set fold / unfold command
+  const setPageFoldCommandBtn = document.getElementById("setPageFoldCommandBtn")
+  // show initial fold / unfold command value
+  createCommandRepresenterFor({ container: setPageFoldCommandBtn, isMac })(
+    foldCommand,
+  )
+  // set click handler
+  setPageFoldCommandBtn.addEventListener("click", () => {
+    currentListenOptionName = CMD_OPT_NAME.FOLD
+    toggleListenCommandPopup()
+  })
+
+  // 2) other stuff
+
+  // fold popup position
+
+  // fold popup font size
+  const foldPopupFontSizeInput = document.getElementById("foldPopupFontSize")
+  foldPopupFontSizeInput.value = settings.foldPopup.fontSizePx
+
+  // fold popup darkmode
+
+  // explicit darkmode on extension pages
 })
 
-// initialize handlers related to listening page command
-document.addEventListener("DOMContentLoaded", async (e) => {
-  // initialize listen page command ui
-
-  const setPageCommandBtn = document.getElementById("setPageCommandBtn")
+// initialize common listen command section
+document.addEventListener("DOMContentLoaded", async () => {
   elems.listenCommandSection = document.getElementById("listenCommand")
-  const listenCommandInput = document.getElementById("listenCommandInput")
-  const listenCommandMsg = document.getElementById("listenCommandMsg")
 
-  chromeStorage.getSettings().then(({ pageCommand }) => {
-    setPageCommandBtn.textContent = keyboardObjToString(pageCommand)
-    listenCommandInput.textContent = keyboardObjToString(pageCommand)
-    currentCommandInput = pageCommand
+  // create ui representer for listen value
+  const isMac = userIsMac()
+  const representListen = createCommandRepresenterFor({
+    container: document.getElementById("listenCommandRepresentation"),
+    isMac,
   })
+  const listenCommandPopup = document.getElementById("listenPopup")
 
-  // set toggle command listen mode listeners
-  setPageCommandBtn.addEventListener("click", (e) => {
-    toggleListenCommandMode()
-    // remove focus so that pressing enter key at listening mode is not clicking this button
-    e.target.blur()
-  })
-  elems.listenCommandSection.addEventListener("dblclick", (e) => {
-    toggleListenCommandMode()
-  })
-
-  // handle command listen
+  // set command listen keydown handler
   document.addEventListener("keydown", async (e) => {
     if (isListeningCommand) {
-      listenCommandMsg.textContent = ""
+      e.preventDefault()
 
-      log("[keydown]", e)
+      // update state and ui
+      currentCommandInput = createCommandInput(e)
+      representListen(currentCommandInput)
 
-      if (e.key === "Escape") {
-        toggleListenCommandMode()
-      } else if (e.key === "Enter") {
-        toggleListenCommandMode()
-
-        // update button text
-        setPageCommandBtn.textContent = keyboardObjToString(currentCommandInput)
-
-        // update storage
-        const settings = await chromeStorage.getSettings()
-        settings.pageCommand = currentCommandInput
-        chrome.storage.sync.set({ settings })
-      } else if (keyIsCommandable(e.key)) {
-        // update current command object
-        currentCommandInput = parseToKeyboardObj(e)
-
-        listenCommandInput.textContent =
-          keyboardObjToString(currentCommandInput)
-
-        if (__DEV) {
-          console.log("[listen] currentCommandInput", currentCommandInput)
-          console.log("[listen] e.key", e.key)
-        }
+      if (isAppropriateCommandInput(currentCommandInput)) {
+        listenCommandPopup.classList.remove("notAppropriate")
       } else {
-        listenCommandInput.textContent = ""
-        listenCommandMsg.textContent = "Input Command is NOT appropriate."
+        listenCommandPopup.classList.add("notAppropriate")
       }
+    }
+  })
+
+  // set cancel button click handler
+  const listenCancelBtn = document.getElementById("listenCancelBtn")
+  listenCancelBtn.addEventListener("click", () => {
+    toggleListenCommandPopup()
+  })
+
+  // set save button click handler
+  const listenSaveBtn = document.getElementById("listenSaveBtn")
+  listenSaveBtn.addEventListener("click", () => {
+    if (isAppropriateCommandInput(currentCommandInput)) {
+      toggleListenCommandPopup()
     }
   })
 })
 
-function toggleListenCommandMode() {
-  log("[toggle mode] to ", !listenCommand)
+// initialize popup preview section?
+document.addEventListener("DOMContentLoaded", async () => {
+  elems.foldPopupPreviewSection = document.getElementById("foldPopupPreview")
+})
 
-  if (isListeningCommand) {
-    elems.listenCommandSection.style.display = "none"
-  } else {
-    elems.listenCommandSection.style.display = "flex"
-    chromeStorage.getSettings().then((settings) => {
-      listenCommandInput.textContent = keyboardObjToString(settings.pageCommand)
-    })
-  }
+// // set listening command handlers
+// document.addEventListener("DOMContentLoaded", async (e) => {
+//   // initialize listen page command ui
+//   const setPageCommandBtn = document.getElementById("setPageCommandBtn")
+//   elems.listenCommandSection = document.getElementById("listenCommand")
+//   const listenCommandInput = document.getElementById("listenCommandInput")
+//   const listenCommandMsg = document.getElementById("listenCommandMsg")
 
+//   chromeStorage.getSettings().then(({ pageCommand }) => {
+//     setPageCommandBtn.textContent = stringifyCommandInput(pageCommand)
+//     listenCommandInput.textContent = stringifyCommandInput(pageCommand)
+//     currentCommandInput = pageCommand
+//   })
+
+//   // set toggle page command listen mode listeners
+//   setPageCommandBtn.addEventListener("click", async (e) => {
+//     if (await toggleListenCommandPopup())
+//       currentListenOptionName = CMD_OPT_NAME.PAGE
+//     // remove focus so that pressing enter key at listening mode is not clicking this button
+//     e.target.blur()
+//   })
+//   // set toggle fold command listen mode handlers
+
+//   // handlers for getting out of listening mode
+//   elems.listenCommandSection.addEventListener("dblclick", (e) => {
+//     toggleListenCommandPopup()
+//   })
+
+//   // handle command listen
+//   document.addEventListener("keydown", async (e) => {
+//     if (isListeningCommand) {
+//       listenCommandMsg.textContent = ""
+
+//       log("[keydown]", e)
+
+//       if (e.key === "Escape") {
+//         await toggleListenCommandPopup()
+//       } else if (e.key === "Enter") {
+//         await toggleListenCommandPopup()
+
+//         // update button text
+//         setPageCommandBtn.textContent =
+//           stringifyCommandInput(currentCommandInput)
+
+//         // update storage
+//         const settings = await chromeStorage.getSettings()
+//         settings.pageCommand = currentCommandInput
+//         chrome.storage.sync.set({ settings })
+//       } else if (keyIsCommandable(e.key)) {
+//         // update current command object
+//         currentCommandInput = createCommandInput(e)
+
+//         listenCommandInput.textContent =
+//           stringifyCommandInput(currentCommandInput)
+
+//         if (__DEV) {
+//           console.log("[listen] currentCommandInput", currentCommandInput)
+//           console.log("[listen] e.key", e.key)
+//         }
+//       } else {
+//         listenCommandInput.textContent = ""
+//         listenCommandMsg.textContent = "Input Command is NOT appropriate."
+//       }
+//     }
+//   })
+// })
+
+async function toggleListenCommandPopup() {
+  // toggle state
   isListeningCommand = !isListeningCommand
-}
+  const isNowListening = isListeningCommand
+  if (__DEV) log("[toggle mode] to ", isListeningCommand)
 
-/**
- * Binds <input type="checkbox"> switch element to storage setting value.
- * @param {HTMLInputElement} element
- * @param {string} settingName
- */
-async function bindInputElemToSettingValue(element, settingName) {
-  // set switch value
-  let settings = await chromeStorage.getSettings()
-  if (settings[settingName]) {
-    element.checked = true
+  // toggle listen section ui
+  elems.listenCommandSection.classList.toggle("listening")
+
+  // represent initial / result value
+  const isMac = userIsMac()
+  if (isNowListening) {
+    const { pageCommand, foldCommand } = await chromeStorage.getSettings()
+    // set initial listen input value to current option value
+    const representListenInitial = createCommandRepresenterFor({
+      container: document.getElementById("listenCommandRepresentation"),
+      isMac,
+    })
+    // set initial value
+    let initialValue
+    if (currentListenOptionName === CMD_OPT_NAME.PAGE) {
+      initialValue = pageCommand
+    } else if (currentListenOptionName === CMD_OPT_NAME.FOLD) {
+      initialValue = foldCommand
+    }
+    // set initial value
+    representListenInitial(initialValue)
+  } else {
+    let representContainerId
+    if (currentListenOptionName === CMD_OPT_NAME.PAGE) {
+      representContainerId = "setPageCommandBtn"
+    } else if (currentListenOptionName === CMD_OPT_NAME.FOLD) {
+      representContainerId = "setFoldCommandBtn"
+    }
+    // create representer for option value
+    let representResult = createCommandRepresenterFor({
+      container: document.getElementById(representContainerId),
+      isMac,
+    })
+    // set option result value
+    representResult(currentCommandInput)
   }
 
-  // event listener for switch click
-  element.addEventListener("change", async (e) => {
-    // get setting every time when switch is clicked
-    // so that this doesn't overwrite other values changed elsewhere
-    let settings = await chromeStorage.getSettings()
-    settings[settingName] = e.target.checked
+  return isNowListening
+}
 
-    await chrome.storage.sync.set({ settings })
+async function representCommandToCurrentValue(settingName) {
+  let representContainerId
+  if (currentListenOptionName === CMD_OPT_NAME.PAGE) {
+    representContainerId = "setPageCommandBtn"
+  } else if (currentListenOptionName === CMD_OPT_NAME.FOLD) {
+    representContainerId = "setFoldCommandBtn"
+  }
+  // create representer for option value
+  let representResult = createCommandRepresenterFor({
+    container: document.getElementById(representContainerId),
+    isMac,
   })
+  // set option result value
+  representResult(currentCommandInput)
 }
 
-/**
- * Creates keyboardObj with KeyboardEvent. Change characters to uppercase.
- * @param {KeyboardEvent} keyboardEvent
- * @returns {object}
- */
-export function parseToKeyboardObj(keyboardEvent) {
-  const keyboardObj = {
-    metaKey: keyboardEvent.metaKey,
-    ctrlKey: keyboardEvent.ctrlKey,
-    shiftKey: keyboardEvent.shiftKey,
-  }
-
-  const key = keyboardEvent.key
-  if (key.length === 1 && "a" <= key && key <= "z")
-    keyboardObj.key = key.toUpperCase()
-  else keyboardObj.key = key
-
-  return keyboardObj
-}
-
-/* Options Page */
-
-/**
- * Test if key is commandable. used at options page to listen.
- * @param {string} key
- * @returns {boolean}
- */
-export const keyIsCommandable = (key) =>
-  key.length === 1 && /^[\S\s]$/.test(key)
-
-const shiftSymbols = new Set([
-  "!",
-  "@",
-  "#",
-  "$",
-  "%",
-  "^",
-  "&",
-  "*",
-  "(",
-  ")",
-  "{",
-  "}",
-  "_",
-  "+",
-  ":",
-  '"',
-  "<",
-  ">",
-  "?",
-  "|",
-  "~",
-])
-
-/**
- * Takes command keyboardObj and gives string representation of it.
- * @param {object} keyboardObj
- * @returns {string}
- */
-export function keyboardObjToString(keyboardObj) {
-  const commands = []
-  const isShiftSymbol = shiftSymbols.has(keyboardObj.key)
-
-  if (keyboardObj.metaKey) commands.push("Meta")
-  if (keyboardObj.ctrlKey) commands.push("Ctrl")
-  // represent Shift+! as !
-  if (keyboardObj.shiftKey && !isShiftSymbol) commands.push("Shift")
-  // represent ' ' as Space
-  commands.push(keyboardObj.key === " " ? "Space" : keyboardObj.key)
-
-  return commands.join("+")
-}
+// async function
 
 // Development Only stuff, tree shaked at production
 // check vite-build.js config for define.__DEV

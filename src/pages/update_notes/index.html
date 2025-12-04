@@ -9,22 +9,49 @@
 </head>
 
 <body>
-  <section class="text-[1.1em]">
-    <h3><a href="../home/index.html" class="extension padding no-underline hover:underline">Tab Group Shortcut</a>
-      Extension Update Notes</h3>
+  <main class="text-[1.1em]">
+    <h3 class="mt-2">
+      <a href="../home/index.html" class="extension padding no-underline hover:underline">Tab Group Shortcut</a>
+      Extension Update Notes
+    </h3>
 
 
     <p class="mt-4 mb-8 text-sm text-right">
       Don't show this page at extension update?
       <button type="button" id="disableOpenUpdateNotesPage"
         class="ml-4 inline-flex flex-nowrap items-center gap-2 bg-(--bg) font-[Ubuntu] border-solid border-(--secondary) border-2 px-2 py-[.4em] shadow-[2px_2px_var(--secondary)] hover:cursor-pointer">
-        <img class="block dark:hidden w-4 h-4" src="../../assets/double-check-light.svg" alt="">
-        <img class="hidden dark:block w-4 h-4" src="../../assets/double-check-dark.svg" alt="">
+        <img class="block dark:hidden w-4 h-4" src="../../assets/icons/material/double-check-light.svg" alt="">
+        <img class="hidden dark:block w-4 h-4" src="../../assets/icons/material/double-check-dark.svg" alt="">
         <span class="text-sm text-(--primary)">Yes & Close</span>
       </button>
     </p>
 
+
+
     <article class="latest">
+      <p>
+        <strong>Latest update (v1.4)</strong>
+      </p>
+      <ul class="updates">
+        <li>Added <span class="underline">Fold / Unfold Command</span> to toggle tab groups in current window.</li>
+        <li>Added options to change <span class="underline">Fold / Unfold Popup Appearances</span>.</li>
+        <li>Added icons and changed command representation for <span class="underline">Mac users</span>.</li>
+        <li>Command can now include <span class="underline">Alt/Option key</span>.</li>
+        <li>Added automatic <span class="underline">darkmode on extension pages</span> based on system preference, and
+          option to set light/dark mode explicitly.
+        </li>
+      </ul>
+      <p class="text-right pt-2">
+        <a href="../options/index.html"
+          class="inline-flex flex-nowrap items-center gap-1 bg-inherit font-[Ubuntu] text-[0.85em] border-solid border-(--secondary) border-2 p-[0.5em] shadow-[2px_2px_var(--secondary)] hover:cursor-pointer">
+          <img class="inline dark:hidden w-4.5 h-4.5" src="../../assets/icons/material/settings-light.svg" alt="">
+          <img class="hidden dark:inline w-4.5 h-4.5" src="../../assets/icons/material/settings-dark.svg" alt="">
+          <span class="text-sm">Visit Options Page</span>
+        </a>
+      </p>
+    </article>
+
+    <article>
       <p><strong>v1.3</strong></p>
       <ul class="updates">
         <li>
@@ -41,25 +68,33 @@
       </ul>
     </article>
 
-    <article>
-      <p><strong>v1.2</strong></p>
-      <ul class="updates">
-        <li>
-          disabled description page showing up every time chrome updates.
-        </li>
-        <li>changed description page font size to not crash at windows.</li>
-      </ul>
-    </article>
 
-    <article>
-      <p><strong>v1.1</strong></p>
-      <ul class="updates">
-        <li>added description page. click on extension icon to open.</li>
-        <li>force toggle with 'Ctrl+Q' command.</li>
-        <li>turning 'Ctrl+Q' command off is available at Options page.</li>
-      </ul>
-    </article>
-  </section>
+
+    <details>
+      <summary class="p-[.4em] mt-4 hover:cursor-pointer select-none">Show all update notes</summary>
+
+      <article>
+        <p><strong>v1.2</strong></p>
+        <ul class="updates">
+          <li>
+            disabled description page showing up every time chrome updates.
+          </li>
+          <li>changed description page font size to not crash at windows.</li>
+        </ul>
+      </article>
+
+      <article>
+        <p><strong>v1.1</strong></p>
+        <ul class="updates">
+          <li>added description page. click on extension icon to open.</li>
+          <li>force toggle with 'Ctrl+Q' command.</li>
+          <li>turning 'Ctrl+Q' command off is available at Options page.</li>
+        </ul>
+      </article>
+    </details>
+
+
+  </main>
 
   <script type="module" src="./script.js"></script>
 </body>

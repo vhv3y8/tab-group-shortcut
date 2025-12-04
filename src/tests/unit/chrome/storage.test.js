@@ -77,3 +77,20 @@ describe("renameProperty(obj, oldPath, newPath, transform)", () => {
     })
   })
 })
+
+it("add new property at deep nested object", () => {
+  expect(true).toBe(false)
+  const before = {
+    metaKey: false,
+    ctrlKey: true,
+    shiftKey: false,
+    key: "G",
+  }
+  const updated = {
+    metaKey: false,
+    ctrlKey: true,
+    altKey: false,
+    shiftKey: false,
+    key: "G",
+  }
+})

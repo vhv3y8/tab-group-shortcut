@@ -1,4 +1,5 @@
 import * as chromeRuntime from "../chrome/runtime"
+import { attachAndCreateFoldPopup } from "./fold/fold"
 
 if (__DEV) log("content script started")
 
@@ -10,6 +11,12 @@ window.addEventListener("load", () => {
     if (__DEV) log("page command fetched", settingPageCommand)
     pageCommand = settingPageCommand
   })
+})
+
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.createElement("div")
+  document.body.appendChild(container)
+  attachAndCreateFoldPopup(container)
 })
 
 function openNamingPopupAndHandle() {

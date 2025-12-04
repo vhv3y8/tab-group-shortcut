@@ -2,7 +2,7 @@
 
 export async function openTutorialPage() {
   return chrome.tabs.create({
-    url: chrome.runtime.getURL("pages/description/index.html"),
+    url: chrome.runtime.getURL("pages/tutorial/index.html"),
   })
 }
 

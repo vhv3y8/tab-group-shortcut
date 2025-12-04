@@ -10,11 +10,27 @@ Chrome Extension that adds a shortcut to group current tab.
 
 ### How to build
 
+Get pnpm package manager :
+
+[https://pnpm.io/installation](https://pnpm.io/installation)
+
+Install dependencies and build :
+
 ```
-pnpm i && pnpm build
+pnpm i && pnpm build:zip
 ```
 
-### Assets
+### Credits
 
-- Icons
-  - [https://fonts.google.com/icons](https://fonts.google.com/icons)
+Icons
+
+- All icons
+  - [metarial icons (https://fonts.google.com/icons)](https://fonts.google.com/icons)
+  - License: Apache License 2.0
+
+CSS
+
+- Slider checkbox at options page
+  - modified based on [https://uiverse.io/mrhyddenn/old-fish-66](https://uiverse.io/mrhyddenn/old-fish-66)
+  - By: [mrhyddenn](https://uiverse.io/profile/mrhyddenn)
+  - License: MIT License

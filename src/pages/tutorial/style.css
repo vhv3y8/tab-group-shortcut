@@ -13,22 +13,20 @@ article {
   }
 
   p {
-    box-sizing: border-box;
-
     @apply box-border px-[0.5em] py-[.2em];
     @apply mb-[0.6em];
     @apply leading-[2.5];
   }
 }
 
-.key {
+@utility key {
   @apply text-(--primary) bg-(--shadow);
   @apply text-base;
   @apply py-[0.25em] px-[0.5em];
   @apply border-solid border-2 border-(--secondary) rounded-[0.25em];
 }
 
-.highlight {
+@utility highlight {
   @apply text-base;
   @apply py-[0.4em] px-[0.5em];
   @apply border-solid border-2 border-(--secondary);

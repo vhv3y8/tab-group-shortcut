@@ -1,9 +1,11 @@
 import * as chromeStorage from "../../chrome/storage"
 
 document.addEventListener("DOMContentLoaded", () => {
+  // don't show this page at extension update button
   const disableOpenUpdateNotesPageBtn = document.getElementById(
     "disableOpenUpdateNotesPage",
   )
+  // set click handler
   disableOpenUpdateNotesPageBtn.addEventListener("click", async () => {
     // get current settings
     let settings = await chromeStorage.getSettings()
