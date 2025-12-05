@@ -1,190 +1,289 @@
 @import "../../common.css";
 @import "./_slider.css";
 
-/* dark */
+/* design system */
+
 @layer theme {
   :root,
   :host {
+    /* dark */
     @variant dark {
-      --secondary: #a0a0a0;
+      /* --secondary: #a0a0a0; */
+      --secondary: #b8b8b8;
     }
   }
 }
 
-/* @custom-variant selected (.selected); */
+/* global */
 
-/* contains option sections */
-article {
-  @apply flex flex-col gap-4;
-  @apply mt-5;
+#listenPopup {
+  min-width: min(350px, 80%);
+  height: min(400px, 80%);
+  box-shadow: 0 0 2px var(--bg);
 
-  article {
-    @apply mt-0;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.positionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  /* gap: 0.5rem 0.25rem; */
+  gap: 0;
+
+  label.radio {
+    padding: calc(var(--spacing) * 3) calc(var(--spacing) * 5);
+    margin: 0;
   }
 }
 
-h3 {
-  @apply my-2 text-xl;
+/* label.selected {
+  @apply bg-(--violet);
+} */
+
+label.option[for] {
+  @variant hover {
+    @apply cursor-pointer;
+  }
 }
 
-h4 {
-  @apply my-2 text-lg;
+/* base */
+
+@layer base {
+  /* article contains option sections */
+  article {
+    @apply flex flex-col gap-4;
+    @apply mt-5;
+
+    article {
+      @apply mt-0;
+    }
+  }
+
+  h3 {
+    @apply my-2 text-xl;
+  }
+
+  h4 {
+    @apply my-2 text-lg;
+  }
+
+  label {
+    @apply select-none;
+
+    /* @variant hover {
+      @apply cursor-pointer;
+    } */
+  }
 }
 
-label {
-  @apply select-none;
+/* components */
+
+@layer components {
+}
+
+/* utilities */
+
+@utility popupBtn {
+  /* @apply px-[0.5em] py-[1em]; */
+  @apply px-[0.3em] py-[0.7em];
+  @apply border-(--secondary) border-2;
+  @apply text-base text-(--primary) font-[Ubuntu];
+  @apply grow;
+  @apply bg-(--bg);
+  box-shadow: 3px 3px var(--secondary);
+
+  /* &.cancel {
+    @apply bg-(--extension);
+  }
+  &.save {
+    @apply bg-(--violet);
+  } */
+  &.save {
+    @apply border-(--secondary) bg-(--extension);
+    box-shadow: 3px 3px var(--secondary);
+  }
+  @variant hover {
+    @apply cursor-pointer;
+  }
 }
 
 /* option section */
 @utility option {
   @apply flex flex-col flex-nowrap;
+  /* @apply bg-(--shadow); */
+  /* 2px solid var(--shadow) */
+  @apply border-solid border-1 border-(--shadow);
+  @apply py-[0.8em] px-[1.2em];
 
   & > label {
     @apply flex flex-row flex-nowrap justify-between items-center;
     @apply py-2;
     @apply text-lg;
 
-    @variant hover {
-      @apply cursor-pointer;
+    @variant [&[for]] {
+      @variant hover {
+        @apply cursor-pointer;
+      }
     }
     @variant first {
       @variant not-last {
         @apply mb-2;
       }
     }
+
+    & > span {
+      align-self: start;
+      line-height: 1.8;
+    }
   }
 
   .description {
-    @apply text-(--secondary);
+    @apply text-(--secondary) leading-6;
     @apply my-1;
   }
 }
 
 @utility key {
+  font-size: max(0.85em, 14px);
   @apply py-1 px-2;
-  @apply text-[0.85em];
   @apply bg-(--shadow);
   @apply border-solid border-2 border-(--secondary) rounded-sm;
 }
 
 @utility link {
-  /* padding: 0.25em 0.5em;
-  background-color: #eee; */
   @apply bg-(--shadow) text-(--secondary);
   @apply py-1 px-2;
   @apply border-none;
 }
 
-/* ul#optionList {
-  list-style: none;
-  padding-left: 0;
+@utility multiRadio {
+  @apply flex gap-[0.4em];
+}
 
-  display: flex;
-  flex-flow: column nowrap;
-  gap: 1em;
-
-  li {
-    font-size: 1.1em;
-    padding-block: 0.5em;
-
-    & > label {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: space-between;
-      align-items: center;
-
-      padding-block: 0.8em;
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
-
-    p.description {
-      font-size: 0.9em;
-      color: #666;
-    }
-  }
-} */
-
-/* span {
-  .padding {
-    padding: 0.2em 0.4em;
+@utility radio {
+  @apply p-2;
+  @apply bg-(--bg) text-(--primary);
+  @variant not-first {
+    @apply ml-1;
   }
 
-  .extension {
-    background-color: #d6deff;
+  &.selected {
+    @apply bg-(--violet);
+    box-shadow: 0 0 2px var(--violet);
   }
-
-  .key {
-    padding: 0.25em 0.5em;
-    background-color: #eee;
-    border-radius: 0.25em;
-    border: 2px solid black;
-
-    font-size: 0.85em;
+  @variant hover {
+    @apply cursor-pointer;
+    @apply bg-(--violet);
+    box-shadow: 0 0 2px var(--violet);
   }
+}
 
-  .link {
-    padding: 0.25em 0.5em;
-    background-color: #eee;
+@utility commandBtn {
+  @apply flex items-center;
+  @apply text-lg font-[Ubuntu];
+  @apply bg-(--extension)  text-(--primary);
+  @apply outline-none border-none;
+  @apply py-[0.6em] px-[0.8em];
+  box-shadow: 0 0 2px var(--extension);
+
+  @variant hover {
+    @apply cursor-pointer;
   }
-} */
+}
 
-/* section#listenCommand {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 999;
+/*  */
 
-  width: 100vw;
-  height: 100vh;
-
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-
-  display: none;
-
-  @apply fixed inset-0 z-50;
-  @apply w-screen h-screen;
-  @apply flex flex-col flex-nowrap justify-center items-center;
-  @apply hidden [.listening]:block;
-  @apply blur-[2px] bg-[rgba(0,0,0,0.5)]
-
-  p {
-    color: white;
-    margin-block: 0.5em;
-    font-size: 1.6em;
-
-    #listenCommandInput {
-      font-size: 30px;
-      min-width: 5em;
-      height: 1.5em;
-      background-color: white;
-      color: black;
-      border: 2px solid #999;
-      padding: 0.3em 0.7em;
-
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      align-items: center;
-    }
+@utility mac {
+  @apply hidden m-0 p-0;
+  @variant in-[.macos] {
+    @apply flex items-center gap-1;
   }
-} */
+}
 
-/* button#setPageCommandBtn {
-  font-size: 1.1em;
-  font-family: "Ubuntu";
-  background: transparent;
-  padding: 0.4em 0.8em;
-
-  &:hover {
-    cursor: pointer;
+@utility win {
+  @apply hidden m-0 p-0;
+  @variant in-[.window] {
+    @apply flex items-center gap-1;
   }
-} */
+}
+
+/*  */
+
+@utility meta {
+  @apply hidden;
+  @variant in-[.metaKey] {
+    /* @apply inline-flex items-center gap-0.5; */
+    @apply inline-flex;
+  }
+}
+
+@utility ctrl {
+  @apply hidden;
+  @variant in-[.ctrlKey] {
+    /* @apply inline-flex items-center gap-0.5; */
+    @apply inline-flex;
+  }
+}
+
+@utility alt {
+  @apply hidden;
+  @variant in-[.altKey] {
+    /* @apply inline-flex items-center gap-0.5; */
+    @apply inline-flex;
+  }
+}
+
+@utility shift {
+  @apply hidden;
+  @variant in-[.shiftKey] {
+    /* @apply inline-flex items-center gap-0.5; */
+    @apply inline-flex;
+  }
+}
+
+@utility inputKey {
+  @apply px-[0.2em];
+}
+
+/*  */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 200px;
+  height: 4px;
+  background: #ddd;
+  border-radius: 4px;
+}
+
+/* 트랙 */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #ddd;
+  border-radius: 4px;
+}
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: #ddd;
+  border-radius: 4px;
+}
+
+/* 썸 */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #333;
+  cursor: pointer;
+  margin-top: -6px; /* 위치 조정 */
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #333;
+  cursor: pointer;
+}

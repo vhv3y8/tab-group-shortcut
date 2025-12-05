@@ -12,35 +12,66 @@
 
 /* design system */
 
+@custom-variant light {
+  :is(:root, :host).light :where(*) {
+    @slot;
+  }
+  @media (prefers-color-scheme: light) {
+    @slot;
+  }
+}
 @custom-variant dark {
+  :is(:root, :host).dark :where(*) {
+    @slot;
+  }
   @media (prefers-color-scheme: dark) {
     @slot;
   }
-  &:where(.dark, .dark *) {
+}
+
+@custom-variant theme-light {
+  @media (prefers-color-scheme: light) {
+    @slot;
+  }
+  &.light {
+    @slot;
+  }
+}
+@custom-variant theme-dark {
+  @media (prefers-color-scheme: dark) {
+    @slot;
+  }
+  &.dark {
     @slot;
   }
 }
 
-/* light */
-@theme {
-  --bg: #fff;
-  --primary: #000;
-  /* --secondary: #666; */
-  --secondary: #444;
-  --shadow: #eee;
-
-  --extension: #d6deff;
-  --important: #ffc3ad;
-  --refresh: #b6e3c8;
-}
-/* dark */
+/* design system */
+/* @theme is not applied some times */
 @layer theme {
   :root,
   :host {
-    @variant dark {
+    /* light */
+    @variant theme-light {
+      --bg: #fff;
+      --primary: #000;
+      /* --secondary: #666; */
+      --secondary: #444;
+      --shadow: #eee;
+
+      --extension: #d6deff;
+      --important: #ffc3ad;
+      --refresh: #b6e3c8;
+      --beige: #ebd7b6;
+      --violet: #e7b8e7;
+    }
+
+    /* dark */
+    @variant theme-dark {
       --bg: #282828;
       --primary: #eee;
-      --secondary: #888;
+      /* --secondary: #888; */
+      --secondary: #b8b8b8;
       --shadow: #323232;
 
       /* --extension: #555f8a;
@@ -55,6 +86,8 @@
       --extension: #3c4260;
       --important: #5f3c33;
       --refresh: #335646;
+      --beige: #6a5a48;
+      --violet: #6a4a68;
     }
   }
 }

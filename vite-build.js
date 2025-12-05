@@ -126,6 +126,10 @@ async function createExtensionZip() {
   return archive.finalize()
 }
 
+async function copyLicenseFiles() {
+  // TODO
+}
+
 // Build
 
 const jsEntries = ["src/content-script/content.js", "src/service-worker.js"]
@@ -137,7 +141,7 @@ const htmlEntries = [
 ]
 
 async function run() {
-  logInfo("emptying out dir once...", "preprocess")
+  logInfo("emptying out dir...", "preprocess")
   await emptyOutDir()
   logInfo("done", "preprocess")
 
@@ -146,11 +150,14 @@ async function run() {
     await build(createJsConfig(jsInput))
   }
   for (const htmlInput of htmlEntries) {
-    logInfo(htmlInput)
+    logInfo(JSON.stringify(htmlInput))
     await build(createHtmlConfig(htmlInput))
   }
 
   if (isProduction) {
+    logInfo("copying license files", "production")
+    await copyLicenseFiles()
+
     logInfo("zipping extension...", "production")
     await createExtensionZip()
     logInfo("done", "production")

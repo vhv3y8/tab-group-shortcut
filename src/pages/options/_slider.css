@@ -1,11 +1,14 @@
+/* Modified / tailwindcss */
 /* From Uiverse.io by mrhyddenn */
 /* The switch - the box around the slider */
+
 .switch {
   font-size: 17px;
   position: relative;
   display: inline-block;
   width: 52px;
   height: 25px;
+  margin-left: 0.5rem;
 }
 
 /* Hide default HTML checkbox */
@@ -23,10 +26,17 @@
   left: 0;
   right: 0;
   bottom: 0px;
-  background: #fff;
   transition: 0.4s;
   border-radius: 30px;
-  border: 1px solid #ccc;
+
+  @variant light {
+    background: #fff;
+    border: 1px solid #ccc;
+  }
+  @variant dark {
+    background-color: #777;
+    border-color: #555;
+  }
 }
 
 .slider:before {
@@ -38,14 +48,29 @@
   left: 1.2px;
   top: 0;
   bottom: 0;
-  background-color: white;
-  box-shadow: 0 2px 5px #999999;
   transition: 0.4s;
+
+  @variant light {
+    background-color: #fff;
+    box-shadow: 0 2px 5px #999;
+  }
+  @variant dark {
+    background-color: #111;
+    box-shadow: 0 2px 5px #333;
+  }
 }
 
 input:checked + .slider {
-  background-color: #54dd8b;
   border: 1px solid transparent;
+
+  @variant light {
+    background-color: #54dd8b;
+    box-shadow: 0 0 3px #54dd8b;
+  }
+  @variant dark {
+    background-color: #2b6f52;
+    box-shadow: 0 0 3px #2b6f52;
+  }
 }
 
 input:checked + .slider:before {

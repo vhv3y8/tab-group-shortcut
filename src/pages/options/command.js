@@ -33,8 +33,8 @@ export function isAppropriateCommandInput(commandInput) {
 // factory that creates function to apply ui with given command input object
 export function createCommandRepresenterFor({ container, isMac }) {
   // handle os specific stuff only once
-  container.classList.remove("mac", "window")
-  container.classList.add(isMac ? "mac" : "window")
+  container.classList.remove("macos", "window")
+  container.classList.add(isMac ? "macos" : "window")
 
   // all representations are handled by changing container class names.
   // container element should have appropriate children elements.
@@ -48,31 +48,12 @@ export function createCommandRepresenterFor({ container, isMac }) {
     if (altKey) container.classList.add("altKey")
     if (shiftKey) container.classList.add("shiftKey")
     // set key text
-    const keySpan = container.querySelector(".inputKey")
+    const keySpan = container.querySelector(
+      `${isMac ? ".mac" : ".win"} .inputKey`,
+    )
     keySpan.textContent = key
   }
 }
-
-// export function stringifyCommandInput({
-//   ctrlKey,
-//   metaKey,
-//   altKey,
-//   shiftKey,
-//   key,
-// }) {
-//   const commands = []
-//   const isShiftSymbol = shiftSymbols.has(key)
-
-//   if (metaKey) commands.push("Meta")
-//   if (ctrlKey) commands.push("Ctrl")
-//   if (altKey) commands.push("Alt")
-//   // represent Shift+! as !
-//   if (shiftKey && !isShiftSymbol) commands.push("Shift")
-//   // represent ' ' as Space
-//   commands.push(key === " " ? "Space" : key)
-
-//   return commands.join(" + ")
-// }
 
 // // // // // // // // // // // // // // // // // // // //
 
@@ -132,3 +113,10 @@ const shiftSymbols = new Set([
   "|",
   "~",
 ])
+
+// Development Only stuff, tree shaked at production
+// check vite-build.js config for define.__DEV
+
+function log(...anything) {
+  console.log(`[tab group shortcut]`, ...anything)
+}

@@ -8,6 +8,10 @@
 
     span.extension {
       @apply bg-[#9eade7];
+
+      @variant dark {
+        @apply bg-[#626a90];
+      }
     }
   }
 

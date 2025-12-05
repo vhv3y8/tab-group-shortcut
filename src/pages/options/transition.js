@@ -2,93 +2,135 @@
 // all transitions are based on inline display: none; property
 const fps = 60
 
-export function transitionToggle(
+export async function transitionToggle(
   node,
-  transition,
+  transitions,
   { delay = 0, duration = 1000, easing = linear },
 ) {
   const display = getComputedStyle(node).display
   if (__DEV) log("[display before]", display)
 
   if (display === "none") {
-    transitionIn(node, transition, { delay, duration, easing })
+    return transitionIn(node, transitions, { delay, duration, easing })
   } else {
-    transitionOut(node, transition, { delay, duration, easing })
+    return transitionOut(node, transitions, { delay, duration, easing })
   }
 }
 
-export function transitionIn(
+export async function transitionIn(
   node,
-  transition,
+  transitions,
   { delay = 0, duration = 1000, easing = linear },
 ) {
   // create keyframes
   let keyframes = []
   const keyframeCount = Math.ceil(duration / fps)
-  for (const keyframeIdx = 0; keyframeIdx <= keyframeCount; keyframeIdx++) {
+  for (let keyframeIdx = 0; keyframeIdx <= keyframeCount; keyframeIdx++) {
     const normalizedTime = keyframeIdx / keyframeCount
     // normalized time with easing applied
     const currentProgress = easing(normalizedTime)
+
     // create keyframe and push
-    keyframes.push(transition(currentProgress))
+    if (typeof transitions === "function") {
+      keyframes.push(transitions(currentProgress))
+    } else if (Array.isArray(transitions)) {
+      const combinedKeyframe = {}
+      // calculate from each transition function
+      // so order matters if there is same property.
+      for (const transition of transitions) {
+        const transitionKeyframe = transition(currentProgress)
+        // add each css property to combined keyframe
+        for (const cssProperty in transitionKeyframe) {
+          combinedKeyframe[cssProperty] = transitionKeyframe[cssProperty]
+        }
+      }
+      keyframes.push(combinedKeyframe)
+    }
   }
+  if (__DEV) log(`[transitionIn keyframes]`, keyframes)
 
   // remove inline display none
   node.style.display = ""
-  node.style.opacity = 0
 
   // trigger reflow
   void node.offsetWidth
 
   // delay
-  const delayAnimation = node.animate([], { duration: delay, fill: "forwards" })
-  delayAnimation.onfinish = () => {
-    // animate
-    node.animate(keyframes, { duration, fill: "forwards" })
-  }
+  const delayAnimation = node.animate([], {
+    duration: delay,
+    fill: "forwards",
+  })
+  await delayAnimation.finished
+  // animate
+  const animation = node.animate(keyframes, { duration, fill: "forwards" })
+  await animation.finished
 }
 
-// animate() applies keyframes "backwards" here, so transition values should be same as transition in.
-// this allows to use same transition function at both in and out.
-export function transitionOut(
+export async function transitionOut(
   node,
-  transition,
+  transitions,
   { delay = 0, duration = 1000, easing = linear },
 ) {
   // create keyframes
   let keyframes = []
   const keyframeCount = Math.ceil(duration / fps)
-  for (const keyframeIdx = 0; keyframeIdx <= keyframeCount; keyframeIdx++) {
+  for (let keyframeIdx = 0; keyframeIdx <= keyframeCount; keyframeIdx++) {
     const normalizedTime = keyframeIdx / keyframeCount
     // normalized time with easing applied
     const currentProgress = easing(normalizedTime)
-    // create keyframe and push
-    keyframes.push(transition(currentProgress))
-  }
 
-  // delay
-  const delayAnimation = node.animate([], { duration: delay, fill: "forwards" })
-  delayAnimation.onfinish = () => {
-    // animate
-    const animation = node.animate(keyframes, { duration, fill: "backwards" })
-    animation.onfinish = () => {
-      // set inline display none
-      node.style.display = "none"
+    // create keyframe and push
+    if (typeof transitions === "function") {
+      keyframes.push(transitions(currentProgress))
+    } else if (Array.isArray(transitions)) {
+      const combinedKeyframe = {}
+      // calculate from each transition function
+      // so order matters if there is same property.
+      for (const transition of transitions) {
+        const transitionKeyframe = transition(currentProgress)
+        // add each css property to combined keyframe
+        for (const cssProperty in transitionKeyframe) {
+          combinedKeyframe[cssProperty] = transitionKeyframe[cssProperty]
+        }
+      }
+      keyframes.push(combinedKeyframe)
     }
   }
+  // reverse keyframes... fill backwards doesn't seems like the right thing
+  keyframes = keyframes.reverse()
+
+  if (__DEV) log(`[transitionOut keyframes]`, keyframes)
+
+  // delay
+  const delayAnimation = node.animate([], {
+    duration: delay,
+    fill: "forwards",
+  })
+  await delayAnimation.finished
+  // animate
+  const animation = node.animate(keyframes, { duration, fill: "forwards" })
+  await animation.finished
+  // set inline display none
+  node.style.display = "none"
 }
 
-// transition factories
+// transition keyframe function factories
 
-export function fade({ opacityStart = 0, opacityEnd = 1 }) {
+export function fade({ opacityStart = 0, opacityEnd = 1 } = {}) {
   return (progress) => ({
     opacity: opacityStart + (opacityEnd - opacityStart) * progress,
   })
 }
 
-export function scale({ scaleStart = 0, scaleEnd = 1 }) {
+export function scale({ scaleStart = 0, scaleEnd = 1 } = {}) {
   return (progress) => ({
     transform: `scale(${scaleStart + (scaleEnd - scaleStart) * progress})`,
+  })
+}
+
+export function fly({ xStart = 0, xEnd = 0, yStart = 0, yEnd = 0 } = {}) {
+  return (progress) => ({
+    transform: `translateX(${xStart + (xEnd - xStart) * progress}px) translateY(${yStart + (yEnd - yStart) * progress}px)`,
   })
 }
 

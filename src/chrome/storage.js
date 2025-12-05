@@ -22,6 +22,10 @@ export const storageDefault = {
     foldPopup: {
       positionNumber: 1,
       fontSizePx: 16,
+      explicitDarkmode: {
+        enable: false,
+        darkmode: true,
+      },
     },
     // others
     explicitDarkMode: {
