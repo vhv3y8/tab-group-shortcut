@@ -92,6 +92,8 @@ function deepMerge(original = {}, toMerge = {}) {
   return out
 }
 
+// File system operations
+
 // Setting emptyOutDir at vite config empties folder at every build() run
 async function emptyOutDir() {
   const outDir = path.resolve(commonConfig.root, commonConfig.build.outDir)
@@ -112,6 +114,24 @@ async function emptyOutDir() {
   }
 }
 
+async function copyLicenseFiles() {
+  const outDir = path.resolve(commonConfig.root, commonConfig.build.outDir)
+  const licenseHome = path.resolve(commonConfig.root, "assets")
+
+  const licenseFileName = "LICENSE"
+  const wholeLicensesFolder = "licenses"
+
+  await fs.copyFile(
+    path.resolve(licenseHome, licenseFileName),
+    path.resolve(outDir, licenseFileName),
+  )
+  await fs.cp(
+    path.resolve(licenseHome, wholeLicensesFolder),
+    path.resolve(outDir, wholeLicensesFolder),
+    { recursive: true },
+  )
+}
+
 async function createExtensionZip() {
   const archive = archiver("zip", {
     zlib: {
@@ -124,10 +144,6 @@ async function createExtensionZip() {
   archive.pipe(fsOuput)
   archive.directory("dist2", false)
   return archive.finalize()
-}
-
-async function copyLicenseFiles() {
-  // TODO
 }
 
 // Build
@@ -157,6 +173,7 @@ async function run() {
   if (isProduction) {
     logInfo("copying license files", "production")
     await copyLicenseFiles()
+    logInfo("done", "production")
 
     logInfo("zipping extension...", "production")
     await createExtensionZip()
