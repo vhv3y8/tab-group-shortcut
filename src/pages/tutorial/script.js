@@ -1,17 +1,17 @@
-function userIsMac() {
-  if (navigator.userAgent) {
-    return navigator.userAgent.toUpperCase().includes("MAC")
-  } else {
-    return navigator.platform.toUpperCase().includes("MAC")
-  }
-}
+import { userIsMac } from "../options/command"
 
 document.addEventListener("DOMContentLoaded", () => {
   // change representation for mac
-  if (userIsMac()) {
+  const isMac = userIsMac()
+  // const isMac = true
+  if (isMac) {
     const cmdSpans = document.querySelectorAll(".ctrlOrCmd")
     cmdSpans.forEach((span) => {
-      span.textContent = "Cmd"
+      span.textContent = "Command"
+    })
+    const controlSpans = document.querySelectorAll(".ctrlOrControl")
+    controlSpans.forEach((span) => {
+      span.textContent = "Control"
     })
   }
 
@@ -33,7 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  // toggle all at enter key
+  // set play pause btn click handler
+  document.getElementById("playPauseBtn").addEventListener("click", (e) => {
+    const firstVideo = videos[0]
+    if (firstVideo.paused) {
+      firstVideo.play()
+    } else {
+      firstVideo.pause()
+    }
+  })
+  // toggle all at space key
   document.addEventListener("keydown", (e) => {
     if (e.key === " ") {
       // prevent scrolling down

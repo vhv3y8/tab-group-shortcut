@@ -10,6 +10,10 @@ Chrome Extension that adds a shortcut to group current tab.
 
 ### How to build
 
+Get Node.js :
+
+[https://nodejs.org/en/download](https://nodejs.org/en/download)
+
 Get pnpm package manager :
 
 [https://pnpm.io/installation](https://pnpm.io/installation)
@@ -20,12 +24,25 @@ Install dependencies and build :
 pnpm i && pnpm build:zip
 ```
 
+#### Applying Build
+
+- Go to `chrome://extensions/`
+- Turn developer mode on
+- Drop zip/folder or click 'Load unpacked' and select folder
+
 ### Credits
+
+Fonts
+
+- Ubuntu
+  - Ubuntu Regular
+  - [https://fonts.google.com/specimen/Ubuntu](https://fonts.google.com/specimen/Ubuntu)
+  - License: UBUNTU FONT LICENCE Version 1.0
 
 Icons
 
 - All icons
-  - [metarial icons (https://fonts.google.com/icons)](https://fonts.google.com/icons)
+  - [Material Symbols (https://fonts.google.com/icons)](https://fonts.google.com/icons)
   - License: Apache License 2.0
 
 CSS

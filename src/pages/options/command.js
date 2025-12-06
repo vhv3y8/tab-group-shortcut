@@ -1,9 +1,17 @@
-export function userIsMac() {
-  if (navigator.userAgent) {
-    return navigator.userAgent.toUpperCase().includes("MAC")
-  } else {
-    return navigator.platform.toUpperCase().includes("MAC")
+export async function userIsMac() {
+  if (navigator.userAgentData?.getHighEntropyValues) {
+    try {
+      const { platform } = await navigator.userAgentData.getHighEntropyValues([
+        "platform",
+      ])
+      if (platform) return platform.toUpperCase().includes("MAC")
+    } catch {}
   }
+
+  const ua = navigator.userAgent || ""
+  const pf = navigator.platform || ""
+
+  return ua.toUpperCase().includes("MAC") || pf.toUpperCase().includes("MAC")
 }
 
 // create command input object from web api keyboard event

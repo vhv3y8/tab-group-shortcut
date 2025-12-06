@@ -4,6 +4,7 @@ import {
   createCommandInput,
   createCommandRepresenterFor,
   userIsMac,
+  representOnce,
 } from "./command"
 import {
   easeInCubic,
@@ -30,7 +31,12 @@ const lookup = {
 let isListeningCommand = false
 let listeningCmdLookup = "PAGE"
 let currentCommandInput = {}
-// listeningCmdLookup
+
+// state for checking reset all popup
+let isCheckingResetAll = false
+
+// state for popup preview
+let isShowingFolPopupPreview
 
 // common elements to handle
 let elems = {
@@ -41,8 +47,7 @@ let elems = {
 // initialize variables and ui with settings value
 document.addEventListener("DOMContentLoaded", async (e) => {
   const settings = await chromeStorage.getSettings()
-  const pageCommand = settings.pageCommand
-  const foldCommand = settings.foldCommand
+  const { pageCommand, foldCommand } = settings
 
   // initialize variables
   currentCommandInput = pageCommand
@@ -58,40 +63,40 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   for (const option of boolOptions) {
     // should be both storage settings property name, and options html input checkbox id
     const id = option
-    const checkbox = document.getElementById(id)
+    const checkbox = byId(id)
     // set checked value
     if (settings[option]) {
       checkbox.checked = true
     }
     // set checkbox toggle handler
-    checkbox.addEventListener("change", async (e) => {
-      let settings = await chromeStorage.getSettings()
-      settings[option] = e.target.checked
-      await chromeStorage.setSettings(settings)
-
+    handleChange(checkbox, async (e) => {
+      await updateStorageSettingOption((settings) => {
+        settings[option] = e.target.checked
+        return settings
+      })
       if (__DEV) log(`${option}: ${e.target.checked}`)
     })
   }
 
   // enable fold command toggle disable stuff
-  const enableFoldCommand = document.getElementById("enableFoldCommand")
-  const foldArticle = document.getElementById("foldArticle")
+  const enableFoldCommand = byId("enableFoldCommand")
+  const foldArticle = byId("foldArticle")
   if (__DEV)
     log(`initial settings["enableFoldCommand"]`, settings["enableFoldCommand"])
   // set initial
   if (settings["enableFoldCommand"]) {
-    foldArticle.classList.add("foldCommandEnabled")
-  } else {
-    foldArticle.classList.remove("foldCommandEnabled")
+    classAdd(foldArticle, "foldCommandEnabled")
   }
   // set handler
-  enableFoldCommand.addEventListener("change", (e) => {
-    if (__DEV) log(`[enableFoldCommand] ${e.target.checked}`)
-    if (e.target.checked) {
-      foldArticle.classList.add("foldCommandEnabled")
-    } else {
-      foldArticle.classList.remove("foldCommandEnabled")
-    }
+  handleChange(enableFoldCommand, (e) => {
+    if (__DEV)
+      log(`[enableFoldCommand] ${e.target.checked}`)
+      // if (e.target.checked) {
+      //   classAdd(foldArticle, "foldCommandEnabled")
+      // } else {
+      //   classRm(foldArticle, "foldCommandEnabled")
+      // }
+    ;(e.target.checked ? classAdd : classRm)(foldArticle, "foldCommandEnabled")
   })
 
   // 2. initialize non-checkbox ui
@@ -99,72 +104,127 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   // 1) command stuff
   const isMac = userIsMac()
   // const isMac = true
-  const listenCommandRepresentation = document.getElementById(
-    "listenCommandRepresentation",
-  )
-  const listenCommandPopupName = document.getElementById(
-    "listenCommandPopupName",
-  )
+  const listenCommandRepresentation = byId("listenCommandRepresentation")
+  const listenCommandPopupName = byId("listenCommandPopupName")
 
   // set group / ungroup command
-  const setPageCommandBtn = document.getElementById("setPageCommandBtn")
+  const setPageCommandBtn = byId("setPageCommandBtn")
   // show initial group / ungroup command value
-  createCommandRepresenterFor({ container: setPageCommandBtn, isMac })(
-    pageCommand,
-  )
+  representOnce({
+    container: setPageCommandBtn,
+    isMac,
+    commandInput: pageCommand,
+  })
   // set click handler
-  setPageCommandBtn.addEventListener("click", async () => {
+  handleClick(setPageCommandBtn, async () => {
     let { pageCommand } = await chromeStorage.getSettings()
     // set states
     listeningCmdLookup = "PAGE"
     currentCommandInput = pageCommand
     // set ui
     listenCommandPopupName.textContent = "Group / Ungroup Command"
-    createCommandRepresenterFor({
+    representOnce({
       container: listenCommandRepresentation,
       isMac,
-    })(currentCommandInput)
+      commandInput: pageCommand,
+    })
     // current value is not change
-    document.getElementById("listenPopup").classList.add("notAppropriate")
+    classAdd(byId("listenPopup"), "notAppropriate")
     // open popup
     toggleListenCommandPopup()
   })
 
   // set fold / unfold command
-  const setPageFoldCommandBtn = document.getElementById("setPageFoldCommandBtn")
+  const setPageFoldCommandBtn = byId("setPageFoldCommandBtn")
   // show initial fold / unfold command value
-  createCommandRepresenterFor({ container: setPageFoldCommandBtn, isMac })(
-    foldCommand,
-  )
+  representOnce({
+    container: setPageFoldCommandBtn,
+    isMac,
+    commandInput: foldCommand,
+  })
   // set click handler
-  setPageFoldCommandBtn.addEventListener("click", async () => {
+  handleClick(setPageFoldCommandBtn, async () => {
     let { foldCommand } = await chromeStorage.getSettings()
     // set states
     listeningCmdLookup = "FOLD"
     currentCommandInput = foldCommand
     // set ui
     listenCommandPopupName.textContent = "Fold / Unfold Command"
-    createCommandRepresenterFor({
+    representOnce({
       container: listenCommandRepresentation,
       isMac,
-    })(currentCommandInput)
+      commandInput: foldCommand,
+    })
     // current value is not change
-    document.getElementById("listenPopup").classList.add("notAppropriate")
+    classAdd(byId("listenPopup"), "notAppropriate")
     // open popup
     toggleListenCommandPopup()
   })
 
   // 2) other stuff
 
+  // key string representation
+  const controlSpans = document.querySelectorAll(".ctrlOrControl")
+  controlSpans.forEach((span) => {
+    span.textContent = "Control"
+  })
+
   // copy shortcuts url
-  const copyShortcutsUrl = document.getElementById("copyShortcutsUrl")
+  const copyShortcutsUrl = byId("copyShortcutsUrl")
   // set click handler
-  copyShortcutsUrl.addEventListener("click", async (e) => {
+  handleClick(copyShortcutsUrl, async (e) => {
     await navigator.clipboard.writeText("chrome://extensions/shortcuts")
     copyShortcutsUrl.classList.add("copied")
-    setTimeout(() => {
-      copyShortcutsUrl.classList.remove("copied")
-    }, 3000)
+    await sleep(3000)
+    copyShortcutsUrl.classList.remove("copied")
+  })
+
+  // focus item tab after unfold
+  const focusItemTabAfterUnfoldIds = [
+    "focusItemTabAfterUnfoldNo",
+    "focusItemTabAfterUnfoldFirst",
+    "focusItemTabAfterUnfoldLast",
+  ]
+  // initial value
+  if (!settings.focusItemTabAfterUnfold.enable) {
+    classAdd(byId("focusItemTabAfterUnfoldNoL"), "selected")
+  } else if (!settings.focusItemTabAfterUnfold.firstOrLastGotoLast) {
+    classAdd(byId("focusItemTabAfterUnfoldFirstL"), "selected")
+  } else {
+    classAdd(byId("focusItemTabAfterUnfoldLastL"), "selected")
+  }
+  // focus no handler
+  byId("focusItemTabAfterUnfoldNo").addEventListener("change", async (e) => {
+    await updateStorageSettingOption((settings) => {
+      settings.focusItemTabAfterUnfold.enable = false
+      return settings
+    })
+    // set ui
+    classAdd(byId("focusItemTabAfterUnfoldNoL"), "selected")
+    classRm(byId("focusItemTabAfterUnfoldFirstL"), "selected")
+    classRm(byId("focusItemTabAfterUnfoldLastL"), "selected")
+  })
+  byId("focusItemTabAfterUnfoldFirst").addEventListener("change", async (e) => {
+    await updateStorageSettingOption((settings) => {
+      settings.focusItemTabAfterUnfold.enable = true
+      settings.focusItemTabAfterUnfold.firstOrLastGotoLast = false
+      return settings
+    })
+    // set ui
+    classRm(byId("focusItemTabAfterUnfoldNoL"), "selected")
+    classAdd(byId("focusItemTabAfterUnfoldFirstL"), "selected")
+    classRm(byId("focusItemTabAfterUnfoldLastL"), "selected")
+  })
+  byId("focusItemTabAfterUnfoldLast").addEventListener("change", async (e) => {
+    await updateStorageSettingOption((settings) => {
+      settings.focusItemTabAfterUnfold.enable = true
+      settings.focusItemTabAfterUnfold.firstOrLastGotoLast = true
+      return settings
+    })
+    // set ui
+    classRm(byId("focusItemTabAfterUnfoldNoL"), "selected")
+    classRm(byId("focusItemTabAfterUnfoldFirstL"), "selected")
+    classAdd(byId("focusItemTabAfterUnfoldLastL"), "selected")
   })
 
   // fold popup position
@@ -180,208 +240,229 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     "foldPopupPosition9",
   ]
   // set initial value
-  document
-    .getElementById(`foldPopupPosition${settings.foldPopup.positionNumber}L`)
-    .classList.add("selected")
+  byId(`foldPopupPosition${settings.foldPopup.positionNumber}L`).classList.add(
+    "selected",
+  )
   // set click handlers
   for (const inputId of foldPopupPositionInputIds) {
-    document.getElementById(inputId).addEventListener("click", async (e) => {
-      let settings = await chromeStorage.getSettings()
+    handleClick(byId(inputId), async (e) => {
       const positionNumber = parseInt(inputId.slice(-1))
-      // remove selected class from current value
-      document
-        .getElementById(
+      await updateStorageSettingOption((settings) => {
+        // remove selected class from current value
+        byId(
           `foldPopupPosition${settings.foldPopup.positionNumber}L`,
-        )
-        .classList.remove("selected")
-      // set setting value and save
-      settings.foldPopup.positionNumber = positionNumber
-      await chromeStorage.setSettings(settings)
+        ).classList.remove("selected")
+        // set setting value and save
+        settings.foldPopup.positionNumber = positionNumber
+        return settings
+      })
       // set ui
-      document.getElementById(`${inputId}L`).classList.add("selected")
+      byId(`${inputId}L`).classList.add("selected")
     })
   }
 
   // fold popup font size
-  const foldPopupFontSizeInput = document.getElementById("foldPopupFontSize")
-  const foldPopupFontSizeRangeInput = document.getElementById(
-    "foldPopupFontSizeRange",
-  )
+  const foldPopupFontSizeInput = byId("foldPopupFontSize")
+  const foldPopupFontSizeRangeInput = byId("foldPopupFontSizeRange")
   // set initial value
   foldPopupFontSizeInput.value = settings.foldPopup.fontSizePx
   foldPopupFontSizeRangeInput.value = settings.foldPopup.fontSizePx
   // set number change handler
-  foldPopupFontSizeInput.addEventListener("change", async (e) => {
+  handleChange(foldPopupFontSizeInput, async (e) => {
     if (__DEV) log(`foldPopupFontSizeInput e.target.value : ${e.target.value}`)
-    let settings = await chromeStorage.getSettings()
-    settings.foldPopup.fontSizePx = e.target.value
-    foldPopupFontSizeRangeInput.value = e.target.value
-    await chromeStorage.setSettings(settings)
+    await updateStorageSettingOption((settings) => {
+      settings.foldPopup.fontSizePx = e.target.value
+      foldPopupFontSizeRangeInput.value = e.target.value
+      return settings
+    })
   })
   // set range change handler
-  foldPopupFontSizeRangeInput.addEventListener("change", async (e) => {
+  handleChange(foldPopupFontSizeRangeInput, async (e) => {
     if (__DEV)
       log(`foldPopupFontSizeRangeInput e.target.value : ${e.target.value}`)
-    let settings = await chromeStorage.getSettings()
-    settings.foldPopup.fontSizePx = e.target.value
     foldPopupFontSizeInput.value = e.target.value
-    await chromeStorage.setSettings(settings)
+    await updateStorageSettingOption((settings) => {
+      settings.foldPopup.fontSizePx = e.target.value
+      return settings
+    })
   })
   // set click handler?
 
   // fold popup darkmode
   // input radios
-  const foldPopupExplicitDarkmodeAutomatic = document.getElementById(
+  const foldPopupExplicitDarkmodeAutomatic = byId(
     "foldPopupExplicitDarkmodeAutomatic",
   )
-  const foldPopupExplicitDarkmodeLight = document.getElementById(
-    "foldPopupExplicitDarkmodeLight",
-  )
-  const foldPopupExplicitDarkmodeDark = document.getElementById(
-    "foldPopupExplicitDarkmodeDark",
-  )
+  const foldPopupExplicitDarkmodeLight = byId("foldPopupExplicitDarkmodeLight")
+  const foldPopupExplicitDarkmodeDark = byId("foldPopupExplicitDarkmodeDark")
   // labels
-  const foldPopupExplicitDarkmodeAutomaticL = document.getElementById(
+  const foldPopupExplicitDarkmodeAutomaticL = byId(
     "foldPopupExplicitDarkmodeAutomaticL",
   )
-  const foldPopupExplicitDarkmodeLightL = document.getElementById(
+  const foldPopupExplicitDarkmodeLightL = byId(
     "foldPopupExplicitDarkmodeLightL",
   )
-  const foldPopupExplicitDarkmodeDarkL = document.getElementById(
-    "foldPopupExplicitDarkmodeDarkL",
-  )
+  const foldPopupExplicitDarkmodeDarkL = byId("foldPopupExplicitDarkmodeDarkL")
   // initial value
   if (!settings.foldPopup.explicitDarkmode) {
-    foldPopupExplicitDarkmodeAutomaticL.classList.add("selected")
+    classAdd(foldPopupExplicitDarkmodeAutomaticL, "selected")
   } else if (!settings.foldPopup.darkmode) {
-    foldPopupExplicitDarkmodeLightL.classList.add("selected")
+    classAdd(foldPopupExplicitDarkmodeLightL, "selected")
   } else {
-    foldPopupExplicitDarkmodeDarkL.classList.add("selected")
+    classAdd(foldPopupExplicitDarkmodeDarkL, "selected")
   }
   // automatic handler
-  foldPopupExplicitDarkmodeAutomatic.addEventListener("click", async (e) => {
+  handleClick(foldPopupExplicitDarkmodeAutomatic, async (e) => {
     if (__DEV) log(`[foldPopupExplicitDarkmode] Automatic`)
-    let settings = await chromeStorage.getSettings()
     // change value and save
-    settings.foldPopup.explicitDarkmode = false
-    await chromeStorage.setSettings(settings)
+    await updateStorageSettingOption((settings) => {
+      settings.foldPopup.explicitDarkmode = false
+      return settings
+    })
     // set ui
-    foldPopupExplicitDarkmodeAutomaticL.classList.add("selected")
-    foldPopupExplicitDarkmodeLightL.classList.remove("selected")
-    foldPopupExplicitDarkmodeDarkL.classList.remove("selected")
+    classAdd(foldPopupExplicitDarkmodeAutomaticL, "selected")
+    classRm(foldPopupExplicitDarkmodeLightL, "selected")
+    classRm(foldPopupExplicitDarkmodeDarkL, "selected")
   })
   // light handler
-  foldPopupExplicitDarkmodeLight.addEventListener("click", async (e) => {
+  handleClick(foldPopupExplicitDarkmodeLight, async (e) => {
     if (__DEV) log(`[foldPopupExplicitDarkmode] Light`)
-    let settings = await chromeStorage.getSettings()
     // change value and save
-    settings.foldPopup.explicitDarkmode = true
-    settings.foldPopup.darkmode = false
-    await chromeStorage.setSettings(settings)
+    await updateStorageSettingOption((settings) => {
+      settings.foldPopup.explicitDarkmode = true
+      settings.foldPopup.darkmode = false
+      return settings
+    })
     // set ui
-    foldPopupExplicitDarkmodeAutomaticL.classList.remove("selected")
-    foldPopupExplicitDarkmodeLightL.classList.add("selected")
-    foldPopupExplicitDarkmodeDarkL.classList.remove("selected")
+    classRm(foldPopupExplicitDarkmodeAutomaticL, "selected")
+    classAdd(foldPopupExplicitDarkmodeLightL, "selected")
+    classRm(foldPopupExplicitDarkmodeDarkL, "selected")
   })
   // dark handler
   foldPopupExplicitDarkmodeDark.addEventListener("click", async (e) => {
     if (__DEV) log(`[foldPopupExplicitDarkmode] Dark`)
-    let settings = await chromeStorage.getSettings()
     // change value and save
-    settings.foldPopup.explicitDarkmode = true
-    settings.foldPopup.darkmode = true
-    await chromeStorage.setSettings(settings)
+    await updateStorageSettingOption((settings) => {
+      settings.foldPopup.explicitDarkmode = true
+      settings.foldPopup.darkmode = true
+      return settings
+    })
     // set ui
-    foldPopupExplicitDarkmodeAutomaticL.classList.remove("selected")
-    foldPopupExplicitDarkmodeLightL.classList.remove("selected")
-    foldPopupExplicitDarkmodeDarkL.classList.add("selected")
+    classRm(foldPopupExplicitDarkmodeAutomaticL, "selected")
+    classRm(foldPopupExplicitDarkmodeLightL, "selected")
+    classAdd(foldPopupExplicitDarkmodeDarkL, "selected")
   })
 
   // explicit darkmode on extension pages
   // input radios
-  const explicitDarkModeAutomatic = document.getElementById(
-    "explicitDarkModeAutomatic",
-  )
-  const explicitDarkModeLight = document.getElementById("explicitDarkModeLight")
-  const explicitDarkModeDark = document.getElementById("explicitDarkModeDark")
+  const explicitDarkModeAutomatic = byId("explicitDarkModeAutomatic")
+  const explicitDarkModeLight = byId("explicitDarkModeLight")
+  const explicitDarkModeDark = byId("explicitDarkModeDark")
   // labels
-  const explicitDarkModeAutomaticL = document.getElementById(
-    "explicitDarkModeAutomaticL",
-  )
-  const explicitDarkModeLightL = document.getElementById(
-    "explicitDarkModeLightL",
-  )
-  const explicitDarkModeDarkL = document.getElementById("explicitDarkModeDarkL")
+  const explicitDarkModeAutomaticL = byId("explicitDarkModeAutomaticL")
+  const explicitDarkModeLightL = byId("explicitDarkModeLightL")
+  const explicitDarkModeDarkL = byId("explicitDarkModeDarkL")
   // initial value
   if (!settings.foldPopup.explicitDarkmode) {
-    explicitDarkModeAutomaticL.classList.add("selected")
+    classAdd(explicitDarkModeAutomaticL, "selected")
   } else if (!settings.foldPopup.darkmode) {
-    explicitDarkModeLightL.classList.add("selected")
-    document.documentElement.classList.add("light")
-    document.documentElement.classList.remove("dark")
+    classAdd(explicitDarkModeLightL, "selected")
+    classAdd(document.documentElement, "light")
+    classRm(document.documentElement, "dark")
   } else {
-    explicitDarkModeDarkL.classList.add("selected")
-    document.documentElement.classList.remove("light")
-    document.documentElement.classList.add("dark")
+    classAdd(explicitDarkModeDarkL, "selected")
+    classRm(document.documentElement, "light")
+    classAdd(document.documentElement, "dark")
   }
   // automatic handler
   explicitDarkModeAutomatic.addEventListener("click", async (e) => {
     if (__DEV) log(`[explicitDarkMode] Automatic`)
-    let settings = await chromeStorage.getSettings()
-    // change value and save
-    settings.explicitDarkmode = false
-    await chromeStorage.setSettings(settings)
+    await updateStorageSettingOption((settings) => {
+      settings.explicitDarkmode.enable = false
+      return settings
+    })
     // set ui
-    explicitDarkModeAutomaticL.classList.add("selected")
-    explicitDarkModeLightL.classList.remove("selected")
-    explicitDarkModeDarkL.classList.remove("selected")
-    document.documentElement.classList.remove("light")
-    document.documentElement.classList.remove("dark")
+    classAdd(explicitDarkModeAutomaticL, "selected")
+    classRm(explicitDarkModeLightL, "selected")
+    classRm(explicitDarkModeDarkL, "selected")
+    classRm(document.documentElement, "selected")
+    classRm(document.documentElement, "selected")
   })
   // light handler
   explicitDarkModeLight.addEventListener("click", async (e) => {
     if (__DEV) log(`[explicitDarkMode] Light`)
-    let settings = await chromeStorage.getSettings()
-    // change value and save
-    settings.explicitDarkmode = true
-    settings.darkmode = false
-    await chromeStorage.setSettings(settings)
+    await updateStorageSettingOption((settings) => {
+      settings.explicitDarkmode.enable = true
+      settings.explicitDarkmode.darkmode = false
+      return settings
+    })
     // set ui
-    explicitDarkModeAutomaticL.classList.remove("selected")
-    explicitDarkModeLightL.classList.add("selected")
-    explicitDarkModeDarkL.classList.remove("selected")
-    document.documentElement.classList.add("light")
-    document.documentElement.classList.remove("dark")
+    classRm(explicitDarkModeAutomaticL, "selected")
+    classAdd(explicitDarkModeLightL, "selected")
+    classRm(explicitDarkModeDarkL, "selected")
+    classAdd(document.documentElement, "selected")
+    classRm(document.documentElement, "selected")
   })
   // dark handler
   explicitDarkModeDark.addEventListener("click", async (e) => {
     if (__DEV) log(`[explicitDarkMode] Dark`)
-    let settings = await chromeStorage.getSettings()
-    // change value and save
-    settings.explicitDarkmode = true
-    settings.darkmode = true
-    await chromeStorage.setSettings(settings)
+    await updateStorageSettingOption((settings) => {
+      settings.explicitDarkmode.enable = true
+      settings.explicitDarkmode.darkmode = false
+      return settings
+    })
     // set ui
-    explicitDarkModeAutomaticL.classList.remove("selected")
-    explicitDarkModeLightL.classList.remove("selected")
-    explicitDarkModeDarkL.classList.add("selected")
-    document.documentElement.classList.remove("light")
-    document.documentElement.classList.add("dark")
+    classRm(explicitDarkModeAutomaticL, "selected")
+    classRm(explicitDarkModeLightL, "selected")
+    classAdd(explicitDarkModeDarkL, "selected")
+    classRm(document.documentElement, "selected")
+    classAdd(document.documentElement, "selected")
+  })
+})
+
+// initialize other elements
+
+// initialize reset all settings
+document.addEventListener("DOMContentLoaded", async (e) => {
+  const resetAll = byId("resetAll")
+
+  // reset all button
+  resetAll.addEventListener("click", async () => {
+    toggleResetAllCheckingPopup()
+    isCheckingResetAll = true
+  })
+  // cancel button
+  const resetCheckCancelBtn = byId("resetCheckCancelBtn")
+  resetCheckCancelBtn.addEventListener("click", async () => {
+    toggleResetAllCheckingPopup()
+    isCheckingResetAll = false
+  })
+  // background double click
+  const resetCheckPopupBackground = byId("resetCheckPopupBackground")
+  resetCheckPopupBackground.addEventListener("dblclick", async () => {
+    toggleResetAllCheckingPopup()
+    isCheckingResetAll = false
+  })
+  // ok button
+  const resetCheckOkBtn = byId("resetCheckOkBtn")
+  resetCheckOkBtn.addEventListener("click", () => {
+    toggleResetAllCheckingPopup()
+    isCheckingResetAll = false
   })
 })
 
 // initialize common listen command section
 document.addEventListener("DOMContentLoaded", async () => {
-  elems.listenCommandSection = document.getElementById("listenCommand")
+  elems.listenCommandSection = byId("listenCommand")
 
   // create ui representer for listen value
   const isMac = userIsMac()
   // const isMac = true
   const representListen = createCommandRepresenterFor({
-    container: document.getElementById("listenCommandRepresentation"),
+    container: byId("listenCommandRepresentation"),
     isMac,
   })
-  const listenCommandPopup = document.getElementById("listenPopup")
+  const listenCommandPopup = byId("listenPopup")
 
   // set command listen keydown handler
   document.addEventListener("keydown", async (e) => {
@@ -393,55 +474,97 @@ document.addEventListener("DOMContentLoaded", async () => {
       currentCommandInput = createCommandInput(e)
       representListen(currentCommandInput)
 
-      if (isAppropriateCommandInput(currentCommandInput)) {
-        listenCommandPopup.classList.remove("notAppropriate")
-      } else {
-        listenCommandPopup.classList.add("notAppropriate")
-      }
+      // if (isAppropriateCommandInput(currentCommandInput)) {
+      //   classRm(listenCommandPopup, "notAppropriate")
+      // } else {
+      //   classAdd(listenCommandPopup, "notAppropriate")
+      // }
+      ;(isAppropriateCommandInput(currentCommandInput) ? classRm : classAdd)(
+        listenCommandPopup,
+        "notAppropriate",
+      )
     }
   })
 
   // set cancel button click handler
-  const listenCancelBtn = document.getElementById("listenCancelBtn")
+  const listenCancelBtn = byId("listenCancelBtn")
   listenCancelBtn.addEventListener("click", () => {
     if (__DEV) log("[cancel click]")
     toggleListenCommandPopup()
   })
   // set background double click handler
-  const listenPopupBackground = document.getElementById("listenPopupBackground")
+  const listenPopupBackground = byId("listenPopupBackground")
   listenPopupBackground.addEventListener("dblclick", () => {
     if (__DEV) log("[background dblclick]")
     toggleListenCommandPopup()
   })
 
   // set save button click handler
-  const listenSaveBtn = document.getElementById("listenSaveBtn")
+  const listenSaveBtn = byId("listenSaveBtn")
   listenSaveBtn.addEventListener("click", async () => {
     if (isAppropriateCommandInput(currentCommandInput)) {
-      // get settings
-      let settings = await chromeStorage.getSettings()
-      // update settings value and save
-      settings[lookup[listeningCmdLookup].optionName] = currentCommandInput
-
-      if (__DEV) log(`[popup save btn] settings to save :`, settings)
-      await chromeStorage.setSettings(settings)
+      await updateStorageSettingOption((settings) => {
+        settings[lookup[listeningCmdLookup].optionName] = currentCommandInput
+        if (__DEV) log(`[popup save btn] settings to save :`, settings)
+        return settings
+      })
       // set ui
       toggleListenCommandPopup()
       let btnId = lookup[listeningCmdLookup].btnId
-      createCommandRepresenterFor({
-        container: document.getElementById(btnId),
-        isMac,
-      })(currentCommandInput)
+      representOnce({ container: byId(btnId), isMac })
     }
   })
 })
 
 // initialize popup preview section?
 document.addEventListener("DOMContentLoaded", async () => {
-  elems.foldPopupPreviewSection = document.getElementById("foldPopupPreview")
+  elems.foldPopupPreviewSection = byId("foldPopupPreview")
 })
 
 // ui functions
+
+async function toggleResetAllCheckingPopup() {
+  const resetCheckPopupContent = byId("resetCheckPopupContent")
+  const resetCheckPopupInfo = byId("resetCheckPopupInfo")
+
+  if (isCheckingResetAll) {
+    // out animation
+    await Promise.all([
+      transitionOut(resetCheckPopupInfo, [fly({ yStart: -5 }), fade()], {
+        duration: 100,
+        easing: easeInCubic,
+      }),
+      transitionOut(
+        resetCheckPopupContent,
+        [scale({ scaleStart: 0.95 }), fade()],
+        {
+          duration: 100,
+          easing: easeOutCubic,
+        },
+      ),
+    ])
+    // remove
+    resetCheckPopup.classList.remove("checking")
+  } else {
+    // add
+    resetCheckPopup.classList.add("checking")
+    // in animation
+    await Promise.all([
+      transitionIn(resetCheckPopupInfo, [fly({ yStart: -5 }), fade()], {
+        duration: 100,
+        easing: easeInCubic,
+      }),
+      transitionIn(
+        resetCheckPopupContent,
+        [scale({ scaleStart: 0.9 }), fade()],
+        {
+          duration: 100,
+          easing: easeInCubic,
+        },
+      ),
+    ])
+  }
+}
 
 async function toggleListenCommandPopup() {
   // toggle state
@@ -450,10 +573,8 @@ async function toggleListenCommandPopup() {
   if (__DEV) log("[toggle mode] to ", isListeningCommand)
 
   // elements to animate
-  const listenPopupDescription = document.getElementById(
-    "listenPopupDescription",
-  )
-  const listenPopup = document.getElementById("listenPopup")
+  const listenPopupDescription = byId("listenPopupDescription")
+  const listenPopup = byId("listenPopup")
   if (isNowListening) {
     // add before in animation
     elems.listenCommandSection.classList.add("listening")
@@ -492,142 +613,64 @@ async function toggleListenCommandPopup() {
     elems.listenCommandSection.classList.remove("listening")
   }
 
-  // represent initial / result value
-  // const isMac = userIsMac()
-  // if (isNowListening) {
-  //   const { pageCommand, foldCommand } = await chromeStorage.getSettings()
-  //   // set initial listen input value to current option value
-  //   const representListenInitial = createCommandRepresenterFor({
-  //     container: document.getElementById("listenCommandRepresentation"),
-  //     isMac,
-  //   })
-  //   // set initial value
-  //   let initialValue
-  //   if (listeningCmdLookup === CMD_OPT_NAME.PAGE) {
-  //     initialValue = pageCommand
-  //   } else if (listeningCmdLookup === CMD_OPT_NAME.FOLD) {
-  //     initialValue = foldCommand
-  //   }
-  //   // set initial value
-  //   representListenInitial(initialValue)
-  // } else {
-  //   let representContainerId
-  //   if (listeningCmdLookup === CMD_OPT_NAME.PAGE) {
-  //     representContainerId = "setPageCommandBtn"
-  //   } else if (listeningCmdLookup === CMD_OPT_NAME.FOLD) {
-  //     representContainerId = "setPageFoldCommandBtn"
-  //   }
-  //   // create representer for option value
-  //   let representResult = createCommandRepresenterFor({
-  //     container: document.getElementById(representContainerId),
-  //     isMac,
-  //   })
-  //   // set option result value
-  //   representResult(currentCommandInput)
-  // }
-
   return isNowListening
 }
 
-function showFoldPopupPreviewTransition() {}
-
 // representation functions
 
-async function representCurrentOnce({ btnId, isMac }) {
-  const container = document.getElementById(btnId)
+export function representOnce({
+  container,
+  isMac,
+  commandInput = currentCommandInput,
+}) {
   // create representer for option value
   let representResult = createCommandRepresenterFor({
     container,
     isMac,
   })
   // set option result value
-  representResult(currentCommandInput)
+  representResult(commandInput)
 }
 
-// // set listening command handlers
-// document.addEventListener("DOMContentLoaded", async (e) => {
-//   // initialize listen page command ui
-//   const setPageCommandBtn = document.getElementById("setPageCommandBtn")
-//   elems.listenCommandSection = document.getElementById("listenCommand")
-//   const listenCommandInput = document.getElementById("listenCommandInput")
-//   const listenCommandMsg = document.getElementById("listenCommandMsg")
+// utils
 
-//   chromeStorage.getSettings().then(({ pageCommand }) => {
-//     setPageCommandBtn.textContent = stringifyCommandInput(pageCommand)
-//     listenCommandInput.textContent = stringifyCommandInput(pageCommand)
-//     currentCommandInput = pageCommand
-//   })
+async function updateStorageSettingOption(updateSettingsAndReturn) {
+  let settings = await chromeStorage.getSettings()
+  settings = updateSettingsAndReturn(settings)
+  await chromeStorage.setSettings(settings)
+}
 
-//   // set toggle page command listen mode listeners
-//   setPageCommandBtn.addEventListener("click", async (e) => {
-//     if (await toggleListenCommandPopup())
-//       listeningCmdLookup = CMD_OPT_NAME.PAGE
-//     // remove focus so that pressing enter key at listening mode is not clicking this button
-//     e.target.blur()
-//   })
-//   // set toggle fold command listen mode handlers
+async function sleep(time) {
+  return new Promise((res) => setTimeout(res, time))
+}
 
-//   // handlers for getting out of listening mode
-//   elems.listenCommandSection.addEventListener("dblclick", (e) => {
-//     toggleListenCommandPopup()
-//   })
+// utils ui
 
-//   // handle command listen
-//   document.addEventListener("keydown", async (e) => {
-//     if (isListeningCommand) {
-//       listenCommandMsg.textContent = ""
+function byId(id) {
+  return document.getElementById(id)
+}
 
-//       log("[keydown]", e)
+function handleClick(element, callback) {
+  element.addEventListener("click", callback)
+}
 
-//       if (e.key === "Escape") {
-//         await toggleListenCommandPopup()
-//       } else if (e.key === "Enter") {
-//         await toggleListenCommandPopup()
+function handleChange(element, callback) {
+  element.addEventListener("change", callback)
+}
 
-//         // update button text
-//         setPageCommandBtn.textContent =
-//           stringifyCommandInput(currentCommandInput)
+// classlist
 
-//         // update storage
-//         const settings = await chromeStorage.getSettings()
-//         settings.pageCommand = currentCommandInput
-//         chrome.storage.sync.set({ settings })
-//       } else if (keyIsCommandable(e.key)) {
-//         // update current command object
-//         currentCommandInput = createCommandInput(e)
+function classAdd(element, className) {
+  element.classList.add(className)
+}
 
-//         listenCommandInput.textContent =
-//           stringifyCommandInput(currentCommandInput)
+function classRm(element, className) {
+  element.classList.remove(className)
+}
 
-//         if (__DEV) {
-//           console.log("[listen] currentCommandInput", currentCommandInput)
-//           console.log("[listen] e.key", e.key)
-//         }
-//       } else {
-//         listenCommandInput.textContent = ""
-//         listenCommandMsg.textContent = "Input Command is NOT appropriate."
-//       }
-//     }
-//   })
-// })
-
-// async function representCommandToCurrentValue(settingName) {
-//   let representContainerId
-//   if (listeningCmdLookup === CMD_OPT_NAME.PAGE) {
-//     representContainerId = "setPageCommandBtn"
-//   } else if (listeningCmdLookup === CMD_OPT_NAME.FOLD) {
-//     representContainerId = "setPageFoldCommandBtn"
-//   }
-//   // create representer for option value
-//   let representResult = createCommandRepresenterFor({
-//     container: document.getElementById(representContainerId),
-//     isMac,
-//   })
-//   // set option result value
-//   representResult(currentCommandInput)
-// }
-
-// async function
+function classTg(element, className) {
+  element.classList.toggle(className)
+}
 
 // Development Only stuff, tree shaked at production
 // check vite-build.js config for define.__DEV

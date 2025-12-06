@@ -19,6 +19,10 @@ export const storageDefault = {
       shiftKey: true,
       key: "G",
     },
+    focusItemTabAfterUnfold: {
+      enable: false,
+      firstOrLastGotoLast: true,
+    },
     foldPopup: {
       positionNumber: 1,
       fontSizePx: 16,
@@ -28,7 +32,7 @@ export const storageDefault = {
       },
     },
     // others
-    explicitDarkMode: {
+    explicitDarkmode: {
       enable: false,
       darkmode: true,
     },

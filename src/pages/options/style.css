@@ -26,6 +26,11 @@
   gap: 1em;
 }
 
+#resetCheckPopupContent {
+  min-width: min(350px, 80%);
+  height: min(100px, 80%);
+}
+
 .positionGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -143,6 +148,13 @@ label.option[for] {
   .description {
     @apply text-(--secondary) leading-6;
     @apply my-1;
+  }
+}
+
+@utility fadeAtFoldCommandDisabled {
+  @apply transition-opacity duration-200;
+  @variant group-not-[.foldCommandEnabled] {
+    @apply opacity-30 pointer-events-none;
   }
 }
 

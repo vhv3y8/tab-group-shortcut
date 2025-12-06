@@ -11,9 +11,16 @@
 <body>
   <main>
     <!-- header -->
-    <h3>
-      How to use Tab Group and
-      <span class="extension">Tab Group Shortcut</span>
+    <h3 class="flex items-center">
+      <span>
+        How to use Tab Group and <span class="extension">Tab Group Shortcut</span>
+      </span>
+
+      <button type="button" id="playPauseBtn"
+        class="ml-auto py-[0.4em] px-[0.5em] bg-(--bg) border-none shadow-[0_0_3px_var(--primary)] hover:cursor-pointer">
+        <img src="../../assets/icons/material/play-pause-light.svg" alt="" class="dark:hidden inline size-7">
+        <img src="../../assets/icons/material/play-pause-dark.svg" alt="" class="hidden dark:inline size-7">
+      </button>
     </h3>
 
     <!-- select multiple tabs -->
@@ -38,7 +45,7 @@
         <source src="assets/ctrl-g-shortcut.webm" />
       </video>
       <p class="extension">
-        Press <span class="key">Ctrl</span> <span class="key">G</span> to
+        Press <span class="key ctrlOrControl">Ctrl</span> <span class="key">G</span> to
         group selected tabs. (extension feature)
       </p>
       <p>
@@ -67,7 +74,7 @@
         group.
       </p>
       <p class="extension">
-        You can ungroup with <span class="key">Ctrl</span>
+        You can ungroup with <span class="key ctrlOrControl">Ctrl</span>
         <span class="key">G</span> too.
       </p>
     </article>
@@ -76,7 +83,7 @@
     <article>
       <p>
         Because of security reasons of the browser,
-        <span class="key">Ctrl</span> <span class="key">G</span> is
+        <span class="key ctrlOrControl">Ctrl</span> <span class="key">G</span> is
         <span class="highlight">not available</span> when focusing at some
         tabs.
       </p>
@@ -87,7 +94,7 @@
         <span class="highlight">Chrome Web Store</span> pages.
       </p>
       <p class="important">
-        You can use <span class="key">Ctrl</span>
+        You can use <span class="key ctrlOrControl">Ctrl</span>
         <span class="key">Q</span> command to Force group / ungroup.
       </p>
       <p>
