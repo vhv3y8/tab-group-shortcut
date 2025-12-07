@@ -1,0 +1,22 @@
+- Press 'Ctrl+G' to group current tab or selected tabs.
+- Ungroup, or combine tabs into group with same command.
+- Force with 'Ctrl+Q' command.
+
+Click extension icon to open help page.
+
+v1.3
+- Added Option to disable opening update notes page whenever the extension is updated.
+- Added Option to change Ctrl+G page command.
+- Added Option to open naming popup after creating tab group.
+- New icon click default page and improvements on all pages.
+
+v1.2
+- disabled description page showing up every time chrome updates.
+- changed description page font size to not crash at windows.
+
+v1.1
+- added description page. click on extension icon to open.
+- force toggle with 'Ctrl+Q' command.
+- turning 'Ctrl+Q' command off is available at Options page.
+
+Feature Request, Language Support, Bug Report : vhv3y8@gmail.com
