@@ -1,88 +1,96 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Tab Group Shortcut - Description Page</title>
-  <link href="style.scss" rel="stylesheet" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tab Group Shortcut - Description Page</title>
+    <link href="style.scss" rel="stylesheet" />
+  </head>
 
-<body>
-<main>
-  <h3>
-    How to use Tab Group and
-    <span class="extension">Tab Group Shortcut</span>
-  </h3>
+  <body>
+    <main>
+      <h3>
+        How to use Tab Group and
+        <span class="extension">Tab Group Shortcut</span>
+      </h3>
 
-  <article>
-    <video autoplay controls loop>
-      <source src="assets/shift-select-multiple.webm" />
-    </video>
-    <p>
-      Use <span class="key">Ctrl</span> key or
-      <span class="key">Shift</span> key to select multiple tabs.
-    </p>
-  </article>
+      <article>
+        <video autoplay controls loop>
+          <source src="assets/shift-select-multiple.webm" />
+        </video>
+        <p>
+          Use <span class="key">Ctrl</span> and
+          <span class="key">Shift</span> key to select multiple tabs.
+        </p>
+        <p>
+          <span class="key">Ctrl</span> <span class="key">Click</span> for
+          adding tab into selection, and <span class="key">Shift</span>
+          <span class="key">Click</span> for selecting all tabs between.
+        </p>
+      </article>
 
-  <article>
-    <video autoplay controls loop>
-      <source src="assets/ctrl-g-shortcut.webm" />
-    </video>
-    <p class="extension">
-      Press <span class="key">Ctrl</span> <span class="key">G</span> to
-      group selected tabs. (extension feature)
-    </p>
-    <p>
-      You can also <span class="key">Right Click</span> group icon to change
-      name and color.
-    </p>
-    <p>
-      <span class="key">Left Click</span> will toggle minimization of the
-      group.
-    </p>
-    <p>
-      You need to <span class="refresh">refresh</span> the existing tabs to
-      use shortcut when <span class="refresh">first installed</span>.
-    </p>
-  </article>
+      <article>
+        <video autoplay controls loop>
+          <source src="assets/ctrl-g-shortcut.webm" />
+        </video>
+        <p class="extension">
+          Press <span class="key">Ctrl</span> <span class="key">G</span> to
+          group selected tabs. (extension feature)
+        </p>
+        <p>
+          You can <span class="key">Right Click</span> group icon to change name
+          and color.
+        </p>
+        <p>
+          <span class="key">Left Click</span> will toggle minimization of the
+          group.
+        </p>
+        <p>
+          You need to <span class="refresh">refresh</span> existing tabs to use
+          extension feature when its
+          <span class="refresh">first installed</span> or
+          <span class="refresh">updated</span>.
+        </p>
+      </article>
 
-  <article>
-    <video autoplay controls loop>
-      <source src="assets/drag-add-remove.webm" />
-    </video>
-    <p>
-      <span class="key">Drag</span> the tab(s) to add to / remove from
-      group.
-    </p>
-    <p class="extension">
-      You can ungroup with <span class="key">Ctrl</span>
-      <span class="key">G</span> too.
-    </p>
-  </article>
+      <article>
+        <video autoplay controls loop>
+          <source src="assets/drag-add-remove.webm" />
+        </video>
+        <p>
+          <span class="key">Drag</span> selected tabs to add to / remove from
+          group.
+        </p>
+        <p class="extension">
+          You can ungroup with <span class="key">Ctrl</span>
+          <span class="key">G</span> too.
+        </p>
+      </article>
 
-  <article>
-    <p>
-      Because of security reasons of the browser,
-      <span class="key">Ctrl</span> <span class="key">G</span> is
-      <span class="highlight">not available</span> when focusing at some
-      tabs.
-    </p>
-    <p>
-      e.g. Chrome Internal
-      <span class="highlight">chrome://</span
-      >, New Tab <span class="highlight">chrome://newtab</span
-    >, and <span class="highlight">Chrome Web Store</span> pages.
-    </p>
-    <p class="important">
-      You can use <span class="key">Ctrl</span>
-      <span class="key">Q</span> command to Force Group / Ungroup.
-    </p>
-    <p>
-      You can turn off <span class="key">Ctrl</span>
-      <span class="key">Q</span> at Options page. (Right Click extension
-      icon -> Options)
-    </p>
-  </article>
-</main>
-</body>
+      <article>
+        <p>
+          Because of security reasons of the browser,
+          <span class="key">Ctrl</span> <span class="key">G</span> is
+          <span class="highlight">not available</span> when focusing at some
+          tabs.
+        </p>
+        <p>
+          e.g. Chrome Internal
+          <span class="highlight">chrome://</span>, New Tab
+          <span class="highlight">chrome://newtab</span>, and
+          <span class="highlight">Chrome Web Store</span> pages.
+        </p>
+        <p class="important">
+          You can use <span class="key">Ctrl</span>
+          <span class="key">Q</span> command to Force group / ungroup.
+        </p>
+        <p>
+          🎉 Click <span class="highlight">Extension Icon</span> and open help
+          page to configure commands/options and find informations!
+        </p>
+      </article>
+    </main>
+
+    <script type="module" src="script.js"></script>
+  </body>
 </html>
