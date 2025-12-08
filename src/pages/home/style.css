@@ -7,8 +7,9 @@
     @apply bg-(--extension) text-(--primary);
 
     span.extension {
-      @apply bg-[#9eade7];
-
+      @variant light {
+        @apply bg-[#9eade7];
+      }
       @variant dark {
         @apply bg-[#626a90];
       }

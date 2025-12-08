@@ -7,13 +7,15 @@
 
 @font-face {
   font-family: "Ubuntu";
-  src: url("assets/fonts/Ubuntu-Regular.ttf");
+  src: local("Ubuntu") local("Ubuntu Regular")
+    url("assets/fonts/Ubuntu-Regular.ttf");
 }
 
 /* design system */
 
 @custom-variant light {
-  :is(:root, :host).light :where(*) {
+  :root.light &,
+  :host.light & {
     @slot;
   }
   @media (prefers-color-scheme: light) {
@@ -21,7 +23,8 @@
   }
 }
 @custom-variant dark {
-  :is(:root, :host).dark :where(*) {
+  :root.dark &,
+  :host.dark & {
     @slot;
   }
   @media (prefers-color-scheme: dark) {

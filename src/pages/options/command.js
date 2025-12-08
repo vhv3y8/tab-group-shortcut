@@ -17,10 +17,8 @@ export async function userIsMac() {
 // create command input object from web api keyboard event
 export function createCommandInput(keyboardEvent) {
   let { metaKey, ctrlKey, altKey, shiftKey, key } = keyboardEvent
-
   // capitalize letter, and keep other strings like caps lock, escape, tab
   if (key.length === 1 && "a" <= key && key <= "z") key = key.toUpperCase()
-
   return {
     metaKey,
     ctrlKey,
@@ -31,10 +29,8 @@ export function createCommandInput(keyboardEvent) {
 }
 
 export function isAppropriateCommandInput(commandInput) {
-  // TODO: maybe this is all possible?
   // TODO: mac specific keys?
   const notCommandableKeys = ["Meta", "Control", "Alt", "Shift"]
-
   return !notCommandableKeys.includes(commandInput.key)
 }
 
@@ -43,7 +39,6 @@ export function createCommandRepresenterFor({ container, isMac }) {
   // handle os specific stuff only once
   container.classList.remove("macos", "window")
   container.classList.add(isMac ? "macos" : "window")
-
   // all representations are handled by changing container class names.
   // container element should have appropriate children elements.
   return function representCommandInput(commandInput) {

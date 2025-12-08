@@ -2,15 +2,15 @@
 
 /* design system */
 
-/* light */
-@theme {
-  --latest-bg: #d0efde;
-}
-/* dark */
 @layer theme {
   :root,
   :host {
-    @variant dark {
+    /* light */
+    @variant theme-light {
+      --latest-bg: #d0efde;
+    }
+    /* dark */
+    @variant theme-dark {
       --latest-bg: #2c4f44;
     }
   }

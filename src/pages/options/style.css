@@ -52,6 +52,11 @@ label.option[for] {
   @variant hover {
     @apply cursor-pointer;
   }
+  & > label {
+    @variant hover {
+      @apply cursor-pointer;
+    }
+  }
 }
 
 /* base */
@@ -124,7 +129,7 @@ label.option[for] {
   @apply py-[0.8em] px-[1.2em];
 
   & > label {
-    @apply flex flex-row flex-nowrap justify-between items-center;
+    @apply flex flex-row flex-wrap justify-between items-center gap-4;
     @apply py-2;
     @apply text-lg;
 
@@ -143,6 +148,12 @@ label.option[for] {
       align-self: start;
       line-height: 1.8;
     }
+  }
+
+  label.switch,
+  div.multiRadio,
+  button.commandBtn {
+    margin-left: auto !important;
   }
 
   .description {
@@ -178,6 +189,7 @@ label.option[for] {
 @utility radio {
   @apply p-2;
   @apply bg-(--bg) text-(--primary);
+  @apply whitespace-nowrap;
   @variant not-first {
     @apply ml-1;
   }

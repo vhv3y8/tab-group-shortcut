@@ -20,8 +20,8 @@ export const storageDefault = {
       key: "G",
     },
     focusItemTabAfterUnfold: {
-      enable: false,
-      firstOrLastGotoLast: true,
+      enable: true,
+      firstOrLastGotoLast: false,
     },
     foldPopup: {
       positionNumber: 1,

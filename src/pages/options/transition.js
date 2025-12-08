@@ -96,7 +96,7 @@ export async function transitionOut(
       keyframes.push(combinedKeyframe)
     }
   }
-  // reverse keyframes... fill backwards doesn't seems like the right thing
+  // reverse keyframes
   keyframes = keyframes.reverse()
 
   if (__DEV) log(`[transitionOut keyframes]`, keyframes)

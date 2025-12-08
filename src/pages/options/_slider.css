@@ -9,6 +9,8 @@
   width: 52px;
   height: 25px;
   margin-left: 0.5rem;
+
+  flex-shrink: 0;
 }
 
 /* Hide default HTML checkbox */
@@ -39,7 +41,7 @@
   }
 }
 
-.slider:before {
+.slider::before {
   position: absolute;
   content: "";
   height: 22px;
@@ -49,12 +51,24 @@
   top: 0;
   bottom: 0;
   transition: 0.4s;
-
-  @variant light {
+}
+/* variant doesn't work */
+:is(:root, :root).light .slider::before {
+  background-color: #fff;
+  box-shadow: 0 2px 5px #999;
+}
+@media (prefers-color-scheme: light) {
+  .slider::before {
     background-color: #fff;
     box-shadow: 0 2px 5px #999;
   }
-  @variant dark {
+}
+:is(:root, :root).dark .slider::before {
+  background-color: #111;
+  box-shadow: 0 2px 5px #333;
+}
+@media (prefers-color-scheme: dark) {
+  .slider::before {
     background-color: #111;
     box-shadow: 0 2px 5px #333;
   }
@@ -73,6 +87,6 @@ input:checked + .slider {
   }
 }
 
-input:checked + .slider:before {
+input:checked + .slider::before {
   transform: translateX(1.6em);
 }

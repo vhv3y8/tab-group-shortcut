@@ -28,5 +28,15 @@
   },
   "action": {
     "default_title": "Tab Group Shortcut"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "content-script/fold/foldpopup.html",
+        "foldpopup-style.css",
+        "*.js.map"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

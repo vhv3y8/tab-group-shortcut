@@ -1,24 +1,50 @@
 import * as chromeRuntime from "../chrome/runtime"
-import { attachAndCreateFoldPopup } from "./fold/fold"
+import * as chromeTabGroups from "../chrome/tabGroups"
+import { createCommandInput } from "../pages/options/command"
+import { ToggleGroupCommand, ToggleGroupPopup } from "./fold/fold"
 
 if (__DEV) log("content script started")
 
-let pageCommand
+let pageCommand, foldCommandEnabled
+let fold
 
-window.addEventListener("load", () => {
-  // get page command from storage and set variable
-  chromeRuntime.getPageCommand().then((settingPageCommand) => {
-    if (__DEV) log("page command fetched", settingPageCommand)
-    pageCommand = settingPageCommand
-  })
+// get settings and set variables
+chromeRuntime.requestSettings().then((settings) => {
+  pageCommand = settings.pageCommand
+  foldCommandEnabled = settings.enableFoldCommand
+  fold = new ToggleGroupCommand(settings.foldCommand)
 })
 
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.createElement("div")
-  document.body.appendChild(container)
-  attachAndCreateFoldPopup(container)
+// 1. group ungroup command
+
+window.addEventListener("keydown", async (e) => {
+  if (
+    pageCommand &&
+    "key" in pageCommand &&
+    commandMatches(pageCommand, createCommandInput(e))
+  ) {
+    e.preventDefault()
+    const settingsOpenNamingPopup =
+      await chromeRuntime.toggleTabGroupAndGetOpenNamingPopup()
+    if (settingsOpenNamingPopup) {
+      openNamingPopupAndHandle()
+    }
+
+    if (__DEV) log("[settings openNamingPopup]", settingsOpenNamingPopup)
+  }
+  if (__DEV) log("[command input]", createCommandInput(e))
 })
 
+// message from service worker force command
+chrome.runtime.onMessage.addListener((msg) => {
+  if (__DEV) log("[force command message]")
+  if (msg.action === "OPEN_NAMING_POPUP") {
+    openNamingPopupAndHandle()
+    if (__DEV) log("[OPEN_NAMING_POPUP]")
+  }
+})
+
+// group naming popup
 function openNamingPopupAndHandle() {
   const groupName = window.prompt("Group name:")
   if (groupName) {
@@ -26,38 +52,69 @@ function openNamingPopupAndHandle() {
   }
 }
 
-// keyboard shortcut
+// 2. fold unfold command
+
+let shadowRoot
+let loadedFoldPopupFiles = false
+let isShowingFoldPopup = false
+let popup
+
 window.addEventListener("keydown", async (e) => {
-  if (__DEV) log("parseToKeyboardObj(e)", parseToKeyboardObj(e))
+  if (foldCommandEnabled) {
+    const commandInput = createCommandInput(e)
 
-  if (
-    !!pageCommand &&
-    "key" in pageCommand &&
-    commandMatches(pageCommand, parseToKeyboardObj(e))
-  ) {
-    e.preventDefault()
-    const settingsOpenNamingPopup =
-      await chromeRuntime.toggleTabGroupAndGetOpenNamingPopup()
-    if (__DEV) log(settingsOpenNamingPopup)
-
-    if (settingsOpenNamingPopup) {
-      openNamingPopupAndHandle()
+    if (!loadedFoldPopupFiles) {
+      if (fold.allModifierKeyDown(commandInput)) {
+        e.preventDefault()
+        loadedFoldPopupFiles = true
+        if (__DEV) log("loading and attaching popup...")
+        // shadowRoot = await fetchAndAttachFoldPopup(createFoldPopupShadowHost())
+        const tabgroups = await chromeRuntime.requestCurrentWindowTabGroups()
+        if (__DEV) log("[tabgroups]", tabgroups)
+        popup = await ToggleGroupPopup.init(
+          createFoldPopupShadowHost(),
+          tabgroups,
+        )
+        popup.showPopup()
+        if (__DEV) log("done", popup)
+      }
+    } else if (
+      fold.allCommandKeyDown(commandInput) &&
+      fold.checkPassedThresholdAndSet()
+    ) {
+      if (!isShowingFoldPopup) {
+        isShowingFoldPopup = true
+        // show popup, current group
+        popup.showPopup()
+      } else {
+        // move to next group
+        popup.gotoNextGroup()
+      }
+    } else if (isShowingFoldPopup && fold.allKeyUp(commandInput)) {
+      // toggle selected group
+      isShowingFoldPopup = false
+      // hide popup
+      popup.hidePopup()
     }
-
-    if (__DEV)
-      if (__DEV)
-        log("Page Command pressed.", pageCommand, settingsOpenNamingPopup)
   }
 })
 
-// message from service worker force command
-chrome.runtime.onMessage.addListener((msg) => {
-  if (__DEV) log("force command message")
-  if (msg.action === "OPEN_NAMING_POPUP") {
-    openNamingPopupAndHandle()
-    if (__DEV) log("OPEN_NAMING_POPUP")
-  }
-})
+function createFoldPopupShadowHost() {
+  if (__DEV) log("[createFoldPopupShadowHost]")
+  // create empty shadow host for fold popup and append to body
+  const shadowHost = document.createElement("div")
+  shadowHost.id = "tabGroupShortcutExtensionFoldPopup"
+  shadowHost.style.position = "fixed"
+  shadowHost.style.top = "0"
+  shadowHost.style.left = "0"
+  shadowHost.style.width = "100vw"
+  shadowHost.style.height = "100vh"
+  // set max z-index, so that its always shown
+  shadowHost.style.zIndex = "2147483647"
+  document.body.appendChild(shadowHost)
+  if (__DEV) log("[create shadow host : shadowHost]", shadowHost)
+  return shadowHost
+}
 
 // Utils
 

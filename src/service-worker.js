@@ -1,6 +1,7 @@
 import * as chromeStorage from "./chrome/storage"
 import * as chromeTabs from "./chrome/tabs"
 import * as chromeTabGroups from "./chrome/tabGroups"
+import * as chromeRuntime from "./chrome/runtime"
 
 // extension install or update
 chrome.runtime.onInstalled.addListener(async (info) => {
@@ -33,16 +34,13 @@ chrome.action.onClicked.addListener(async () => {
 // handle messages sent from content script
 chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
   switch (msg.action) {
-    case "GET_PAGE_COMMAND": {
+    case "GET_SETTINGS": {
       // listener have to return true to make other side able to await for sendBack value
       ;(async () => {
         const settings = await chromeStorage.getSettings()
         if (__DEV)
-          console.log(
-            "[tab group shortcut: GET_PAGE_COMMAND: settings]",
-            settings,
-          )
-        sendBack(settings.pageCommand)
+          console.log("[tab group shortcut: GET_SETTINGS: settings]", settings)
+        sendBack(settings)
       })()
       return true
     }
@@ -54,6 +52,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
         // send back boolean that it should open naming popup or not
         const settings = await chromeStorage.getSettings()
         sendBack(haveCreatedGroup && settings.openNamingPopup)
+      })()
+      return true
+    }
+    case "GET_FOLD_POPUP_URLS": {
+      const [htmlUrl, cssUrl] = chromeRuntime.getRuntimeFoldPopupUrls()
+      sendBack([htmlUrl, cssUrl])
+      return true
+    }
+    case "GET_CURRENT_TAB_GROUPS": {
+      ;(async () => {
+        const tabGroups = await chromeTabGroups.getCurrentWindowTabGroups()
+        if (__DEV) console.log("[tabGroups]", tabGroups)
+        sendBack(tabGroups)
       })()
       return true
     }

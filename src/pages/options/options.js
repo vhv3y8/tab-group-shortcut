@@ -4,7 +4,6 @@ import {
   createCommandInput,
   createCommandRepresenterFor,
   userIsMac,
-  representOnce,
 } from "./command"
 import {
   easeInCubic,
@@ -82,20 +81,14 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   const enableFoldCommand = byId("enableFoldCommand")
   const foldArticle = byId("foldArticle")
   if (__DEV)
-    log(`initial settings["enableFoldCommand"]`, settings["enableFoldCommand"])
+    log(`initial settings["enableFoldCommand"]`, settings.enableFoldCommand)
   // set initial
-  if (settings["enableFoldCommand"]) {
+  if (settings.enableFoldCommand.enable) {
     classAdd(foldArticle, "foldCommandEnabled")
   }
   // set handler
   handleChange(enableFoldCommand, (e) => {
-    if (__DEV)
-      log(`[enableFoldCommand] ${e.target.checked}`)
-      // if (e.target.checked) {
-      //   classAdd(foldArticle, "foldCommandEnabled")
-      // } else {
-      //   classRm(foldArticle, "foldCommandEnabled")
-      // }
+    if (__DEV) log(`[enableFoldCommand] ${e.target.checked}`)
     ;(e.target.checked ? classAdd : classRm)(foldArticle, "foldCommandEnabled")
   })
 
@@ -167,6 +160,10 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   const controlSpans = document.querySelectorAll(".ctrlOrControl")
   controlSpans.forEach((span) => {
     span.textContent = "Control"
+  })
+  const altOrCmdSpans = document.querySelectorAll(".altOrCmd")
+  altOrCmdSpans.forEach((span) => {
+    span.textContent = "Command"
   })
 
   // copy shortcuts url
@@ -304,9 +301,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   )
   const foldPopupExplicitDarkmodeDarkL = byId("foldPopupExplicitDarkmodeDarkL")
   // initial value
-  if (!settings.foldPopup.explicitDarkmode) {
+  if (!settings.foldPopup.explicitDarkmode.enable) {
     classAdd(foldPopupExplicitDarkmodeAutomaticL, "selected")
-  } else if (!settings.foldPopup.darkmode) {
+  } else if (!settings.foldPopup.explicitDarkmode.darkmode) {
     classAdd(foldPopupExplicitDarkmodeLightL, "selected")
   } else {
     classAdd(foldPopupExplicitDarkmodeDarkL, "selected")
@@ -316,7 +313,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     if (__DEV) log(`[foldPopupExplicitDarkmode] Automatic`)
     // change value and save
     await updateStorageSettingOption((settings) => {
-      settings.foldPopup.explicitDarkmode = false
+      settings.foldPopup.explicitDarkmode.enable = false
       return settings
     })
     // set ui
@@ -329,8 +326,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     if (__DEV) log(`[foldPopupExplicitDarkmode] Light`)
     // change value and save
     await updateStorageSettingOption((settings) => {
-      settings.foldPopup.explicitDarkmode = true
-      settings.foldPopup.darkmode = false
+      settings.foldPopup.explicitDarkmode.enable = true
+      settings.foldPopup.explicitDarkmode.darkmode = false
       return settings
     })
     // set ui
@@ -343,8 +340,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     if (__DEV) log(`[foldPopupExplicitDarkmode] Dark`)
     // change value and save
     await updateStorageSettingOption((settings) => {
-      settings.foldPopup.explicitDarkmode = true
-      settings.foldPopup.darkmode = true
+      settings.foldPopup.explicitDarkmode.enable = true
+      settings.foldPopup.explicitDarkmode.darkmode = true
       return settings
     })
     // set ui
@@ -363,9 +360,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   const explicitDarkModeLightL = byId("explicitDarkModeLightL")
   const explicitDarkModeDarkL = byId("explicitDarkModeDarkL")
   // initial value
-  if (!settings.foldPopup.explicitDarkmode) {
+  if (!settings.explicitDarkmode.enable) {
     classAdd(explicitDarkModeAutomaticL, "selected")
-  } else if (!settings.foldPopup.darkmode) {
+  } else if (!settings.explicitDarkmode.darkmode) {
     classAdd(explicitDarkModeLightL, "selected")
     classAdd(document.documentElement, "light")
     classRm(document.documentElement, "dark")
@@ -385,8 +382,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     classAdd(explicitDarkModeAutomaticL, "selected")
     classRm(explicitDarkModeLightL, "selected")
     classRm(explicitDarkModeDarkL, "selected")
-    classRm(document.documentElement, "selected")
-    classRm(document.documentElement, "selected")
+    classRm(document.documentElement, "light")
+    classRm(document.documentElement, "dark")
   })
   // light handler
   explicitDarkModeLight.addEventListener("click", async (e) => {
@@ -400,40 +397,40 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     classRm(explicitDarkModeAutomaticL, "selected")
     classAdd(explicitDarkModeLightL, "selected")
     classRm(explicitDarkModeDarkL, "selected")
-    classAdd(document.documentElement, "selected")
-    classRm(document.documentElement, "selected")
+    classAdd(document.documentElement, "light")
+    classRm(document.documentElement, "dark")
   })
   // dark handler
   explicitDarkModeDark.addEventListener("click", async (e) => {
     if (__DEV) log(`[explicitDarkMode] Dark`)
     await updateStorageSettingOption((settings) => {
       settings.explicitDarkmode.enable = true
-      settings.explicitDarkmode.darkmode = false
+      settings.explicitDarkmode.darkmode = true
       return settings
     })
     // set ui
     classRm(explicitDarkModeAutomaticL, "selected")
     classRm(explicitDarkModeLightL, "selected")
     classAdd(explicitDarkModeDarkL, "selected")
-    classRm(document.documentElement, "selected")
-    classAdd(document.documentElement, "selected")
+    classRm(document.documentElement, "light")
+    classAdd(document.documentElement, "dark")
   })
 })
 
 // initialize other elements
 
-// initialize reset all settings
+// initialize reset all options
 document.addEventListener("DOMContentLoaded", async (e) => {
   const resetAll = byId("resetAll")
 
   // reset all button
-  resetAll.addEventListener("click", async () => {
+  handleClick(resetAll, async () => {
     toggleResetAllCheckingPopup()
     isCheckingResetAll = true
   })
   // cancel button
   const resetCheckCancelBtn = byId("resetCheckCancelBtn")
-  resetCheckCancelBtn.addEventListener("click", async () => {
+  handleClick(resetCheckCancelBtn, async () => {
     toggleResetAllCheckingPopup()
     isCheckingResetAll = false
   })
@@ -445,9 +442,12 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   })
   // ok button
   const resetCheckOkBtn = byId("resetCheckOkBtn")
-  resetCheckOkBtn.addEventListener("click", () => {
-    toggleResetAllCheckingPopup()
+  handleClick(resetCheckOkBtn, async () => {
+    await toggleResetAllCheckingPopup()
     isCheckingResetAll = false
+    // reset storage and reload page
+    await chromeStorage.setStorage(chromeStorage.storageDefault)
+    window.location.reload()
   })
 })
 
@@ -469,16 +469,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (isListeningCommand) {
       e.preventDefault()
       if (__DEV) log(`[listening command]`, createCommandInput(e))
-
       // update state and ui
       currentCommandInput = createCommandInput(e)
       representListen(currentCommandInput)
-
-      // if (isAppropriateCommandInput(currentCommandInput)) {
-      //   classRm(listenCommandPopup, "notAppropriate")
-      // } else {
-      //   classAdd(listenCommandPopup, "notAppropriate")
-      // }
+      // fade if not appropriate
       ;(isAppropriateCommandInput(currentCommandInput) ? classRm : classAdd)(
         listenCommandPopup,
         "notAppropriate",
@@ -488,7 +482,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // set cancel button click handler
   const listenCancelBtn = byId("listenCancelBtn")
-  listenCancelBtn.addEventListener("click", () => {
+  handleClick(listenCancelBtn, () => {
     if (__DEV) log("[cancel click]")
     toggleListenCommandPopup()
   })
@@ -501,7 +495,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // set save button click handler
   const listenSaveBtn = byId("listenSaveBtn")
-  listenSaveBtn.addEventListener("click", async () => {
+  handleClick(listenSaveBtn, async () => {
     if (isAppropriateCommandInput(currentCommandInput)) {
       await updateStorageSettingOption((settings) => {
         settings[lookup[listeningCmdLookup].optionName] = currentCommandInput
@@ -510,8 +504,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       })
       // set ui
       toggleListenCommandPopup()
-      let btnId = lookup[listeningCmdLookup].btnId
-      representOnce({ container: byId(btnId), isMac })
+      representOnce({
+        container: byId(lookup[listeningCmdLookup].btnId),
+        isMac,
+      })
     }
   })
 })

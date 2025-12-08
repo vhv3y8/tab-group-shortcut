@@ -1,0 +1,79 @@
+@import "../../common.css";
+
+/* extracted from https://chromium.googlesource.com/chromium/src/+/refs/heads/main/ui/gfx/color_palette.h */
+/* and compared with browser screenshot capture. (close ones are light 600 dark 300) */
+/* but doesn't know exactly what colors are applied in chromium codebase.  */
+@layer theme {
+  :root,
+  :host {
+    @variant theme-light {
+      --tg-grey: #80868b;
+      --tg-blue: #1a73e8;
+      --tg-red: #d93025;
+      --tg-yellow: #f9ab00;
+      --tg-green: #1e8e3e;
+      --tg-pink: #e52592;
+      --tg-purple: #9334e6;
+      --tg-cyan: #12b5cb;
+      --tg-orange: #e8710a;
+    }
+
+    @variant theme-dark {
+      --tg-grey: #dadce0;
+      --tg-blue: #8ab4f8;
+      --tg-red: #f28b82;
+      --tg-yellow: #fdd663;
+      --tg-green: #81c995;
+      --tg-pink: #ff8bcb;
+      --tg-purple: #c58af9;
+      --tg-cyan: #78d9ec;
+      --tg-orange: #fcad70;
+    }
+  }
+}
+
+@utility grey {
+  @apply bg-(--tg-grey);
+}
+@utility blue {
+  @apply bg-(--tg-blue);
+}
+@utility red {
+  @apply bg-(--tg-red);
+}
+@utility yellow {
+  @apply bg-(--tg-yellow);
+}
+@utility green {
+  @apply bg-(--tg-green);
+}
+@utility pink {
+  @apply bg-(--tg-pink);
+}
+@utility purple {
+  @apply bg-(--tg-purple);
+}
+@utility cyan {
+  @apply bg-(--tg-cyan);
+}
+@utility orange {
+  @apply bg-(--tg-orange);
+}
+
+/*  */
+
+@utility rootElem {
+  box-shadow: 0 0 2px var(--shadow);
+  @apply bg-(--bg);
+  @apply font-[Ubuntu] text-sm text-(--primary);
+}
+
+@utility selected {
+  @apply bg-(--shadow);
+}
+
+@utility chip {
+  /* @apply w-[20px] h-[20px]; */
+  @apply w-4 h-4;
+  @apply rounded-sm;
+}
