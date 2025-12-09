@@ -34,6 +34,11 @@ export function isAppropriateCommandInput(commandInput) {
   return !notCommandableKeys.includes(commandInput.key)
 }
 
+export function isAppropriateFoldCommand(commandInput) {
+  const { metaKey, ctrlKey, altKey, shiftKey } = commandInput
+  return metaKey || ctrlKey || altKey || shiftKey
+}
+
 // factory that creates function to apply ui with given command input object
 export function createCommandRepresenterFor({ container, isMac }) {
   // handle os specific stuff only once

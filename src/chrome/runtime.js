@@ -39,11 +39,23 @@ export async function requestCurrentWindowTabGroups() {
   return chrome.runtime.sendMessage({ action: "GET_CURRENT_TAB_GROUPS" })
 }
 
+export async function requestInitialTabGroupId() {
+  return chrome.runtime.sendMessage({ action: "GET_INITIAL_GROUP_ID" })
+}
+
+export async function requestFoldToggleTabgroup(groupId) {
+  return chrome.runtime.sendMessage({
+    action: "TOGGLE_FOLD_TAB_GROUP",
+    groupId,
+  })
+}
+
 // service worker
 
 export function getRuntimeFoldPopupUrls() {
   return [
     chrome.runtime.getURL("content-script/fold/foldpopup.html"),
     chrome.runtime.getURL("foldpopup-style.css"),
+    chrome.runtime.getURL(""),
   ]
 }

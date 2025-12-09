@@ -277,20 +277,20 @@ label.option[for] {
 input[type="range"] {
   -webkit-appearance: none;
   width: 200px;
-  height: 4px;
-  background: #ddd;
+  height: 0.5em;
+  background: var(--shadow);
   border-radius: 4px;
 }
 
 /* 트랙 */
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 4px;
-  background: #ddd;
+  height: 0.5em;
+  background: var(--shadow);
   border-radius: 4px;
 }
 input[type="range"]::-moz-range-track {
-  height: 4px;
-  background: #ddd;
+  height: 0.5em;
+  background: var(--shadow);
   border-radius: 4px;
 }
 

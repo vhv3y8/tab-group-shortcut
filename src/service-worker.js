@@ -32,6 +32,7 @@ chrome.action.onClicked.addListener(async () => {
 })
 
 // handle messages sent from content script
+// listener have to return true to make other side able to await for sendBack value
 chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
   switch (msg.action) {
     case "GET_SETTINGS": {
@@ -68,8 +69,48 @@ chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
       })()
       return true
     }
+    case "GET_INITIAL_GROUP_ID": {
+      chromeTabGroups.getInitialTabGroupId(sender.tab.id).then(sendBack)
+      return true
+    }
     case "SET_TABGROUP_NAME": {
       chromeTabGroups.updateTabGroupName(sender.tab.groupId, msg.groupName)
+      break
+    }
+    case "TOGGLE_FOLD_TAB_GROUP": {
+      ;(async () => {
+        // toggle fold
+        const hasUnfolded = await chromeTabGroups.foldToggleTabgroup(
+          msg.groupId,
+        )
+        if (hasUnfolded) {
+          // focus tab in tabgroup, based on option
+          const { focusItemTabAfterUnfold } = await chromeStorage.getSettings()
+          if (focusItemTabAfterUnfold.enable) {
+            const groupTabsSortedByIndex = await chrome.tabs
+              .query({ groupId: msg.groupId })
+              .then((tabs) => tabs.sort((a, b) => a.index - b.index))
+            if (__DEV)
+              console.log("[groupTabsSortedByIndex]", groupTabsSortedByIndex)
+
+            const gotoLastTab = focusItemTabAfterUnfold.firstOrLastGotoLast
+            if (gotoLastTab) {
+              const lastTabId =
+                groupTabsSortedByIndex[groupTabsSortedByIndex.length - 1].id
+              chrome.tabs.update(lastTabId, { active: true })
+            } else {
+              const firstTabId = groupTabsSortedByIndex[0].id
+              chrome.tabs.update(firstTabId, { active: true })
+            }
+          }
+        } else {
+          // move to next tab.. tab focus lives even when tabgroup containing it is folded.
+          // chrome browser default behavior seems like:
+          // move to next tab after folded tabgroup, or previous tab before tabgroup (if there is none after).
+          // and if all tabs are in tabgroup and no tab is active after fold (e.g. all tabs are in single group, or there are other groups but they are all folded), create new tab and focus.
+        }
+      })()
+      break
     }
   }
   if (__DEV) console.log("[tab group shortcut: onMessage] msg", msg)

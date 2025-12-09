@@ -26,7 +26,7 @@
       <h3 id="listenCommandPopupName" class="p-0 m-0">Group / Ungroup Command</h3>
       <!-- listen -->
       <div class="relative grid place-items-center bg-(--shadow) p-4 grow">
-        <p class="absolute top-0 py-[1em] m-0 text-center text-lg">Listening...</p>
+        <p id="listenPopupInfo" class="absolute top-0 py-[1em] m-0 text-center text-lg">Listening...</p>
         <!-- listen representation -->
         <div id="listenCommandRepresentation" class="p-8 text-[28px] in-[.notAppropriate]:opacity-50">
           <!-- mac -->
@@ -255,7 +255,7 @@
         <p class="description flex flex-wrap items-center gap-2">
           You can change predefined command for this at
           <button type="button" id="copyShortcutsUrl"
-            class="link group inline-flex items-center ml-3 gap-1.5 bg-(--extension) text-[0.9em] font-[Ubuntu] p-[0.6em] shadow-[0_0_2px_var(--extension)] hover:cursor-pointer">
+            class="link group inline-flex items-center gap-1.5 bg-(--extension) text-[0.9em] font-[Ubuntu] p-[0.6em] shadow-[0_0_2px_var(--extension)] hover:cursor-pointer">
             <!-- copy -->
             <div class="group-[.copied]:hidden inline">
               <img src="../../assets/icons/material/copy-light.svg" class="light:inline-block dark:hidden size-5"
@@ -293,7 +293,9 @@
 
         <p class="description">Fold and unfold tab groups in the current window. Basically you use it like <span
             class="key altOrCmd">Alt</span> <span class="key">Tab</span>.</p>
-        <p class="description">Pressing command will toggle fold for next tab group, relative to the current tab.</p>
+        <p class="description">Pressing command will toggle fold for current or previous tab group, relative to the
+          current tab.
+        </p>
         <p class="description">Holding and pressing command shows popup with current window tabgroups, and selecting one
           will toggle
           fold for
@@ -364,7 +366,7 @@
 
       <label class="option fadeAtFoldCommandDisabled">
         <label class="flex flex-wrap gap-2">
-          <span>Move focus to tab inside tabgroup after unfold?</span>
+          <span>Move focus to tab in tabgroup after unfold?</span>
 
           <!-- radios -->
           <input type="radio" name="foldPopupExplicitDarkmode" id="focusItemTabAfterUnfoldNo" value="No" class="hidden">
@@ -423,11 +425,11 @@
           </label>
         </section>
 
-        <section class="option">
+        <!-- <section class="option">
           <label for="foldPopupFontSize">
             <span>Popup Font Size</span>
 
-            <div>
+            <div class="flex flex-col gap-1">
               <input type="range" name="foldPopupFontSize" id="foldPopupFontSizeRange" min="8" max="50" value="16">
               <span><input type="number" name="" id="foldPopupFontSize" value="16">px</span>
             </div>
@@ -435,7 +437,7 @@
           <p class="description">
             Sizes like width, height are affected by the font size.
           </p>
-        </section>
+        </section> -->
 
         <section class="option">
           <label>
@@ -450,7 +452,7 @@
             <!-- labels -->
             <div class="multiRadio">
               <label for="foldPopupExplicitDarkmodeAutomatic" id="foldPopupExplicitDarkmodeAutomaticL"
-                class="radio">Automatic</label>
+                class="radio">System</label>
               <label for="foldPopupExplicitDarkmodeLight" id="foldPopupExplicitDarkmodeLightL"
                 class="radio">Light</label>
               <label for="foldPopupExplicitDarkmodeDark" id="foldPopupExplicitDarkmodeDarkL" class="radio">Dark</label>
@@ -489,7 +491,7 @@
           <input type="radio" name="explicitDarkMode" id="explicitDarkModeDark" value="Dark" class="hidden">
           <!-- labels -->
           <div class="multiRadio">
-            <label for="explicitDarkModeAutomatic" id="explicitDarkModeAutomaticL" class="radio">Automatic</label>
+            <label for="explicitDarkModeAutomatic" id="explicitDarkModeAutomaticL" class="radio">System</label>
             <label for="explicitDarkModeLight" id="explicitDarkModeLightL" class="radio">Light</label>
             <label for="explicitDarkModeDark" id="explicitDarkModeDarkL" class="radio">Dark</label>
           </div>

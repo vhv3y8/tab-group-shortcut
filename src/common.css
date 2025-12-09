@@ -15,7 +15,7 @@
 
 @custom-variant light {
   :root.light &,
-  :host.light & {
+  :host(.light) & {
     @slot;
   }
   @media (prefers-color-scheme: light) {
@@ -24,7 +24,7 @@
 }
 @custom-variant dark {
   :root.dark &,
-  :host.dark & {
+  :host(.dark) & {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
@@ -50,15 +50,12 @@
 }
 
 /* design system */
-/* @theme is not applied some times */
+/* @theme is not applied sometimes */
 @layer theme {
-  :root,
-  :host {
-    /* light */
+  :root {
     @variant theme-light {
       --bg: #fff;
       --primary: #000;
-      /* --secondary: #666; */
       --secondary: #444;
       --shadow: #eee;
 
@@ -68,24 +65,65 @@
       --beige: #ebd7b6;
       --violet: #e7b8e7;
     }
-
-    /* dark */
     @variant theme-dark {
       --bg: #282828;
       --primary: #eee;
-      /* --secondary: #888; */
       --secondary: #b8b8b8;
       --shadow: #323232;
 
-      /* --extension: #555f8a;
-      --important: #8a594a;
-      --refresh: #4a7a5d; */
-      /* --extension: #4a5070;
-      --important: #704a3f;
-      --refresh: #3f614c; */
-      /* --extension: #2f354f;
-      --important: #4f322b;
-      --refresh: #244035; */
+      --extension: #3c4260;
+      --important: #5f3c33;
+      --refresh: #335646;
+      --beige: #6a5a48;
+      --violet: #6a4a68;
+    }
+  }
+
+  :host(.light) {
+    --bg: #fff;
+    --primary: #000;
+    --secondary: #444;
+    --shadow: #eee;
+
+    --extension: #d6deff;
+    --important: #ffc3ad;
+    --refresh: #b6e3c8;
+    --beige: #ebd7b6;
+    --violet: #e7b8e7;
+  }
+  :host(.dark) {
+    --bg: #282828;
+    --primary: #eee;
+    --secondary: #b8b8b8;
+    --shadow: #323232;
+
+    --extension: #3c4260;
+    --important: #5f3c33;
+    --refresh: #335646;
+    --beige: #6a5a48;
+    --violet: #6a4a68;
+  }
+  @media (prefers-color-scheme: light) {
+    :host {
+      --bg: #fff;
+      --primary: #000;
+      --secondary: #444;
+      --shadow: #eee;
+
+      --extension: #d6deff;
+      --important: #ffc3ad;
+      --refresh: #b6e3c8;
+      --beige: #ebd7b6;
+      --violet: #e7b8e7;
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --bg: #282828;
+      --primary: #eee;
+      --secondary: #b8b8b8;
+      --shadow: #323232;
+
       --extension: #3c4260;
       --important: #5f3c33;
       --refresh: #335646;

@@ -114,6 +114,74 @@ async function emptyOutDir() {
   }
 }
 
+const materialIcons = ["tab-light.svg", "tab-dark.svg"]
+
+async function copyContentScriptAssetsAndUpdateManifest() {
+  const assetsDir = path.resolve(commonConfig.root, "assets/icons/material")
+  const outDir = path.resolve(commonConfig.root, commonConfig.build.outDir)
+  // copy files
+  await Promise.all(
+    [materialIcons]
+      .flat(Infinity)
+      .map((fileName) =>
+        fs.copyFile(
+          path.resolve(assetsDir, fileName),
+          path.resolve(outDir, fileName),
+        ),
+      ),
+  )
+  // add to web accessibles
+  await updateManifest((manifest) => {
+    manifest["web_accessible_resources"][0].resources.push(...materialIcons)
+    return manifest
+  })
+}
+
+async function addJsSourceMapAccessibleForDev() {
+  // const builtManifestPath = path.resolve(
+  //   commonConfig.root,
+  //   commonConfig.build.outDir,
+  //   "manifest.json",
+  // )
+  // let builtManifest = await fs
+  //   .readFile(builtManifestPath, "utf8")
+  //   .then((txt) => JSON.parse(txt))
+  // const jsSourceMapResource = "*.js.map"
+  // builtManifest["web_accessible_resources"][0].resources.push(
+  //   jsSourceMapResource,
+  // )
+  // await fs.writeFile(
+  //   builtManifestPath,
+  //   JSON.stringify(builtManifest, null, 2),
+  //   "utf8",
+  // )
+  await updateManifest((manifest) => {
+    const jsSourceMapResource = "*.js.map"
+    manifest["web_accessible_resources"][0].resources.push(jsSourceMapResource)
+    return manifest
+  })
+}
+
+async function updateManifest(updateHook) {
+  const builtManifestPath = path.resolve(
+    commonConfig.root,
+    commonConfig.build.outDir,
+    "manifest.json",
+  )
+  // get manifest
+  let builtManifest = await fs
+    .readFile(builtManifestPath, "utf8")
+    .then((txt) => JSON.parse(txt))
+  // run hook
+  builtManifest = updateHook(builtManifest)
+  // save manifest
+  await fs.writeFile(
+    builtManifestPath,
+    JSON.stringify(builtManifest, null, 2),
+    "utf8",
+  )
+}
+
 async function copyLicenseFiles() {
   const outDir = path.resolve(commonConfig.root, commonConfig.build.outDir)
   const licenseHome = path.resolve(commonConfig.root, "assets")
@@ -159,10 +227,12 @@ const htmlEntries = [
 ]
 
 async function run() {
-  logInfo("emptying out dir...", "preprocess")
+  // before
+  logInfo("emptying out dir...", "before")
   await emptyOutDir()
-  logInfo("done", "preprocess")
+  logInfo("done", "before")
 
+  // build
   for (const jsInput of jsEntries) {
     logInfo(jsInput)
     await build(createJsConfig(jsInput))
@@ -172,6 +242,11 @@ async function run() {
     await build(createHtmlConfig(htmlInput))
   }
 
+  // after
+  logInfo("copy content script assets", "after")
+  await copyContentScriptAssetsAndUpdateManifest()
+  logInfo("done", "after")
+
   if (isProduction) {
     logInfo("copying license files", "production")
     await copyLicenseFiles()
@@ -180,6 +255,10 @@ async function run() {
     logInfo("zipping extension...", "production")
     await createExtensionZip()
     logInfo("done", "production")
+  } else {
+    logInfo("adding *.js.map to manifest web accessibles...", "dev")
+    await addJsSourceMapAccessibleForDev()
+    logInfo("done", "dev")
   }
 }
 

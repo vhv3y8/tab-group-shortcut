@@ -13,10 +13,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 })
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // change representation for mac
-  const isMac = userIsMac()
+  const isMac = await userIsMac()
   // const isMac = true
+  if (__DEV) console.log("[isMac]", isMac)
   if (isMac) {
     const cmdSpans = document.querySelectorAll(".ctrlOrCmd")
     cmdSpans.forEach((span) => {
@@ -29,31 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // handle video tags
-  const videos = document.querySelectorAll("video")
-
-  // set handlers so that every video tags toggle together
-  videos.forEach((v) => {
-    v.addEventListener("play", () => {
-      videos.forEach((other) => {
-        if (other !== v) other.play()
-      })
-    })
-
-    v.addEventListener("pause", () => {
-      videos.forEach((other) => {
-        if (other !== v) other.pause()
-      })
-    })
-  })
+  const videos = Array.from(document.querySelectorAll("video"))
 
   // set play pause btn click handler
   document.getElementById("playPauseBtn").addEventListener("click", (e) => {
-    const firstVideo = videos[0]
-    if (firstVideo.paused) {
-      firstVideo.play()
-    } else {
-      firstVideo.pause()
-    }
+    toggleAllPlayPause(videos)
   })
   // toggle all at space key
   document.addEventListener("keydown", (e) => {
@@ -63,13 +44,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // if video tag is not focused
       if (!Array.from(videos).includes(document.activeElement)) {
-        // toggle all triggering handler above
-        if (videos[0].paused) {
-          videos[0].play()
-        } else {
-          videos[0].pause()
-        }
+        toggleAllPlayPause(videos)
       }
     }
   })
 })
+
+function toggleAllPlayPause(videos) {
+  const atLeastOneIsPlaying = !videos.every((v) => v.paused)
+  if (atLeastOneIsPlaying) {
+    videos.forEach((v) => {
+      if (!v.paused) v.pause()
+    })
+  } else {
+    videos.forEach((v) => {
+      if (v.paused) v.play()
+    })
+  }
+}

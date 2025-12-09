@@ -5,13 +5,15 @@ import { ToggleGroupCommand, ToggleGroupPopup } from "./fold/fold"
 
 if (__DEV) log("content script started")
 
-let pageCommand, foldCommandEnabled
+let pageCommand, foldCommandEnabled, focusItemTabAfterUnfold, foldPopup
 let fold
 
 // get settings and set variables
 chromeRuntime.requestSettings().then((settings) => {
   pageCommand = settings.pageCommand
   foldCommandEnabled = settings.enableFoldCommand
+  focusItemTabAfterUnfold = settings.focusItemTabAfterUnfold
+  foldPopup = settings.foldPopup
   fold = new ToggleGroupCommand(settings.foldCommand)
 })
 
@@ -32,7 +34,7 @@ window.addEventListener("keydown", async (e) => {
 
     if (__DEV) log("[settings openNamingPopup]", settingsOpenNamingPopup)
   }
-  if (__DEV) log("[command input]", createCommandInput(e))
+  // if (__DEV) log("[command input]", createCommandInput(e))
 })
 
 // message from service worker force command
@@ -75,7 +77,11 @@ window.addEventListener("keydown", async (e) => {
           createFoldPopupShadowHost(),
           tabgroups,
         )
-        popup.showPopup()
+        // apply setting values
+        popup.updatePopupPosition(foldPopup.positionNumber)
+        if (foldPopup.explicitDarkmode.enable) {
+          popup.setExplicitDarkmode(darkmode)
+        }
         if (__DEV) log("done", popup)
       }
     } else if (
@@ -86,17 +92,30 @@ window.addEventListener("keydown", async (e) => {
         isShowingFoldPopup = true
         // show popup, current group
         popup.showPopup()
+        popup.gotoInitialGroup()
+        if (__DEV) log("[showing popup]")
       } else {
         // move to next group
         popup.gotoNextGroup()
+        if (__DEV) log("[moving to next group]")
       }
-    } else if (isShowingFoldPopup && fold.allKeyUp(commandInput)) {
-      // toggle selected group
-      isShowingFoldPopup = false
-      // hide popup
-      popup.hidePopup()
     }
   }
+})
+
+window.addEventListener("keyup", async (e) => {
+  const commandInput = createCommandInput(e)
+  if (isShowingFoldPopup && fold.allKeyUp(commandInput)) {
+    // hide popup
+    isShowingFoldPopup = false
+    // popup.hidePopup()
+    if (__DEV) log("[hiding popup]")
+
+    // request toggle group
+    await chromeRuntime.requestFoldToggleTabgroup(popup.getSelectedTabgroupId())
+  }
+
+  if (__DEV) log("[keyup]", commandInput)
 })
 
 function createFoldPopupShadowHost() {

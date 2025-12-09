@@ -4,6 +4,7 @@ import {
   createCommandInput,
   createCommandRepresenterFor,
   userIsMac,
+  isAppropriateFoldCommand,
 } from "./command"
 import {
   easeInCubic,
@@ -83,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   if (__DEV)
     log(`initial settings["enableFoldCommand"]`, settings.enableFoldCommand)
   // set initial
-  if (settings.enableFoldCommand.enable) {
+  if (settings.enableFoldCommand) {
     classAdd(foldArticle, "foldCommandEnabled")
   }
   // set handler
@@ -259,30 +260,30 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   }
 
   // fold popup font size
-  const foldPopupFontSizeInput = byId("foldPopupFontSize")
-  const foldPopupFontSizeRangeInput = byId("foldPopupFontSizeRange")
-  // set initial value
-  foldPopupFontSizeInput.value = settings.foldPopup.fontSizePx
-  foldPopupFontSizeRangeInput.value = settings.foldPopup.fontSizePx
-  // set number change handler
-  handleChange(foldPopupFontSizeInput, async (e) => {
-    if (__DEV) log(`foldPopupFontSizeInput e.target.value : ${e.target.value}`)
-    await updateStorageSettingOption((settings) => {
-      settings.foldPopup.fontSizePx = e.target.value
-      foldPopupFontSizeRangeInput.value = e.target.value
-      return settings
-    })
-  })
-  // set range change handler
-  handleChange(foldPopupFontSizeRangeInput, async (e) => {
-    if (__DEV)
-      log(`foldPopupFontSizeRangeInput e.target.value : ${e.target.value}`)
-    foldPopupFontSizeInput.value = e.target.value
-    await updateStorageSettingOption((settings) => {
-      settings.foldPopup.fontSizePx = e.target.value
-      return settings
-    })
-  })
+  // const foldPopupFontSizeInput = byId("foldPopupFontSize")
+  // const foldPopupFontSizeRangeInput = byId("foldPopupFontSizeRange")
+  // // set initial value
+  // foldPopupFontSizeInput.value = settings.foldPopup.fontSizePx
+  // foldPopupFontSizeRangeInput.value = settings.foldPopup.fontSizePx
+  // // set number change handler
+  // handleChange(foldPopupFontSizeInput, async (e) => {
+  //   if (__DEV) log(`foldPopupFontSizeInput e.target.value : ${e.target.value}`)
+  //   await updateStorageSettingOption((settings) => {
+  //     settings.foldPopup.fontSizePx = e.target.value
+  //     foldPopupFontSizeRangeInput.value = e.target.value
+  //     return settings
+  //   })
+  // })
+  // // set range change handler
+  // handleChange(foldPopupFontSizeRangeInput, async (e) => {
+  //   if (__DEV)
+  //     log(`foldPopupFontSizeRangeInput e.target.value : ${e.target.value}`)
+  //   foldPopupFontSizeInput.value = e.target.value
+  //   await updateStorageSettingOption((settings) => {
+  //     settings.foldPopup.fontSizePx = e.target.value
+  //     return settings
+  //   })
+  // })
   // set click handler?
 
   // fold popup darkmode
@@ -464,22 +465,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   })
   const listenCommandPopup = byId("listenPopup")
 
-  // set command listen keydown handler
-  document.addEventListener("keydown", async (e) => {
-    if (isListeningCommand) {
-      e.preventDefault()
-      if (__DEV) log(`[listening command]`, createCommandInput(e))
-      // update state and ui
-      currentCommandInput = createCommandInput(e)
-      representListen(currentCommandInput)
-      // fade if not appropriate
-      ;(isAppropriateCommandInput(currentCommandInput) ? classRm : classAdd)(
-        listenCommandPopup,
-        "notAppropriate",
-      )
-    }
-  })
-
   // set cancel button click handler
   const listenCancelBtn = byId("listenCancelBtn")
   handleClick(listenCancelBtn, () => {
@@ -493,10 +478,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     toggleListenCommandPopup()
   })
 
+  // set command listen keydown handler
+  document.addEventListener("keydown", async (e) => {
+    if (isListeningCommand) {
+      e.preventDefault()
+      if (__DEV) log(`[listening command]`, createCommandInput(e))
+      // update state and ui
+      currentCommandInput = createCommandInput(e)
+      representListen(currentCommandInput)
+      // fade if not appropriate
+      let commandValidator
+      if (listeningCmdLookup === "PAGE") {
+        const isAppropriate = isAppropriateCommandInput(currentCommandInput)
+        ;(isAppropriate ? classRm : classAdd)(
+          listenCommandPopup,
+          "notAppropriate",
+        )
+      } else if (listeningCmdLookup === "FOLD") {
+        const isValid = isAppropriateCommandInput(currentCommandInput)
+        const isAppropriate = isAppropriateFoldCommand(currentCommandInput)
+
+        if (isValid && isAppropriate) {
+          classRm(listenCommandPopup, "notAppropriate")
+        } else if (!isAppropriate) {
+          byId("listenPopupInfo").textContent = isMac
+            ? "This command should include at least one key of Cmd, Option, Shift or Control."
+            : "This command should include at least one key of Win, Ctrl, Alt or Shift."
+          classAdd(listenCommandPopup, "notAppropriate")
+        } else {
+          byId("listenPopupInfo").textContent = "Listening..."
+          classAdd(listenCommandPopup, "notAppropriate")
+        }
+      }
+    }
+  })
+
   // set save button click handler
   const listenSaveBtn = byId("listenSaveBtn")
   handleClick(listenSaveBtn, async () => {
-    if (isAppropriateCommandInput(currentCommandInput)) {
+    const commandValidator =
+      listeningCmdLookup === "PAGE"
+        ? isAppropriateCommandInput
+        : isAppropriateFoldCommand
+    if (commandValidator(currentCommandInput)) {
       await updateStorageSettingOption((settings) => {
         settings[lookup[listeningCmdLookup].optionName] = currentCommandInput
         if (__DEV) log(`[popup save btn] settings to save :`, settings)
@@ -520,6 +544,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ui functions
 
 async function toggleResetAllCheckingPopup() {
+  const resetCheckPopup = byId("resetCheckPopup")
   const resetCheckPopupContent = byId("resetCheckPopupContent")
   const resetCheckPopupInfo = byId("resetCheckPopupInfo")
 
@@ -608,6 +633,7 @@ async function toggleListenCommandPopup() {
     // remove after out animation
     elems.listenCommandSection.classList.remove("listening")
   }
+  byId("listenPopupInfo").textContent = "Listening..."
 
   return isNowListening
 }

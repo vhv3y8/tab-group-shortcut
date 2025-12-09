@@ -30,6 +30,8 @@ pnpm i && pnpm build:zip
 - Turn developer mode on
 - Drop zip/folder or click 'Load unpacked' and select folder
 
+### How does it work?
+
 ### Credits
 
 Fonts
