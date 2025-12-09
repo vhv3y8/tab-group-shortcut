@@ -70,7 +70,6 @@ window.addEventListener("keydown", async (e) => {
         e.preventDefault()
         loadedFoldPopupFiles = true
         if (__DEV) log("loading and attaching popup...")
-        // shadowRoot = await fetchAndAttachFoldPopup(createFoldPopupShadowHost())
         const tabgroups = await chromeRuntime.requestCurrentWindowTabGroups()
         if (__DEV) log("[tabgroups]", tabgroups)
         popup = await ToggleGroupPopup.init(
@@ -82,7 +81,7 @@ window.addEventListener("keydown", async (e) => {
         if (foldPopup.explicitDarkmode.enable) {
           popup.setExplicitDarkmode(darkmode)
         }
-        if (__DEV) log("done", popup)
+        if (__DEV) log("[popup initialized]", popup)
       }
     } else if (
       fold.allCommandKeyDown(commandInput) &&
@@ -99,6 +98,11 @@ window.addEventListener("keydown", async (e) => {
         popup.gotoNextGroup()
         if (__DEV) log("[moving to next group]")
       }
+    } else if (!isShowingFoldPopup && fold.allModifierKeyDown(commandInput)) {
+      e.preventDefault()
+      if (__DEV) log("fetching tabgroups again...")
+      const tabgroups = await chromeRuntime.requestCurrentWindowTabGroups()
+      await popup.updateGroupsAndIndexes(tabgroups)
     }
   }
 })
@@ -108,14 +112,12 @@ window.addEventListener("keyup", async (e) => {
   if (isShowingFoldPopup && fold.allKeyUp(commandInput)) {
     // hide popup
     isShowingFoldPopup = false
-    // popup.hidePopup()
+    popup.hidePopup()
     if (__DEV) log("[hiding popup]")
 
     // request toggle group
     await chromeRuntime.requestFoldToggleTabgroup(popup.getSelectedTabgroupId())
   }
-
-  if (__DEV) log("[keyup]", commandInput)
 })
 
 function createFoldPopupShadowHost() {

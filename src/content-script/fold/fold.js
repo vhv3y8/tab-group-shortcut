@@ -1,28 +1,5 @@
 import * as chromeRuntime from "../../chrome/runtime"
-import * as chromeStorage from "../../chrome/storage"
-import { getInitialTabGroupId } from "../../chrome/tabGroups"
 import { commandMatches } from "../content"
-
-// export async function fetchAndAttachFoldPopup(shadowHost) {
-//   // create shadow dom
-//   const shadowRoot = shadowHost.attachShadow({ mode: "open" })
-//   // get urls
-//   const [htmlUrl, cssUrl] = await chromeRuntime.requestFoldPopupUrls()
-//   if (__DEV) log("fetched urls", htmlUrl, cssUrl)
-//   // get texts
-//   const [html, css] = await Promise.all([
-//     fetch(htmlUrl).then((r) => r.text()),
-//     fetch(cssUrl).then((r) => r.text()),
-//   ])
-//   if (__DEV) log("raw", html, css)
-//   // set shadow dom
-//   shadowRoot.innerHTML = html
-
-//   const rootElem = shadowRoot.querySelector("section")
-//   rootElem.style.display = "none"
-
-//   return rootElem
-// }
 
 export class ToggleGroupPopup {
   host
@@ -89,8 +66,39 @@ export class ToggleGroupPopup {
     )
   }
 
-  async updateGroupsAndIndexes() {
-    // TODO
+  async updateGroupsAndIndexes(tabgroups) {
+    const initialGroupId = await chromeRuntime.requestInitialTabGroupId()
+    const extensionUrlPrefix = chrome.runtime.getURL("")
+    // create popup ui again
+    const groupList = this.rootElem.querySelector("#groupList")
+    groupList.innerHTML = ""
+    let liElems = []
+    let initialTabgroupIdx = 0
+    for (const [
+      idx,
+      { id, color, title, folded, tabsCount, tabTitlesCombined },
+    ] of Object.entries(tabgroups)) {
+      const listItem = ToggleGroupPopup.createListItem(
+        idx,
+        color,
+        title || tabTitlesCombined,
+        folded,
+        tabsCount,
+        extensionUrlPrefix,
+      )
+      groupList.appendChild(listItem)
+      liElems.push(listItem)
+
+      if (initialGroupId !== -1 && id === initialGroupId) {
+        initialTabgroupIdx = idx
+      }
+    }
+    // update fields
+    this.tabgroups = tabgroups
+    this.liElems = liElems
+    this.liElems[this.currentTabgroupIdx].classList.remove("selected")
+    this.initialTabgroupIdx = initialTabgroupIdx
+    this.currentTabgroupIdx = initialTabgroupIdx
   }
 
   static async fetchAndAttachFoldPopup(shadowHost) {
@@ -103,8 +111,8 @@ export class ToggleGroupPopup {
     const [html, css] = await Promise.all(
       [htmlUrl, cssUrl].map((url) => fetch(url).then((r) => r.text())),
     )
+    // if (__DEV) log("raw", html, css)
 
-    if (__DEV) log("raw", html, css)
     // set shadow dom
     shadowRoot.innerHTML = `
       <html>
@@ -142,12 +150,16 @@ export class ToggleGroupPopup {
       <p class="title grow whitespace-nowrap overflow-hidden text-ellipsis">
       </p>
       <div class="tabs flex items-center">
+        <img src="${extensionUrlPrefix.concat("fold-light.svg")}" alt="| FOLDED" class="hidden light:group-[.folded]:inline size-4.5 mr-2"></img>
+        <img src="${extensionUrlPrefix.concat("fold-dark.svg")}" alt="| FOLDED" class="hidden dark:group-[.folded]:inline size-4.5 mr-2"></img>
+
         <img src="${extensionUrlPrefix.concat("tab-light.svg")}" alt="| " class="light:inline dark:hidden size-4"></img>
         <img src="${extensionUrlPrefix.concat("tab-dark.svg")}" alt="| " class="light:hidden dark:inline size-4"></img>
         <span class="ml-1">${tabsCount}</span>
       </div>
     `
     li.id = `groupIdx${idx}`
+    li.classList.add("group")
     li.querySelector(".title").textContent = title
     if (folded) li.classList.add("folded")
     return li
@@ -201,11 +213,6 @@ export class ToggleGroupPopup {
   getSelectedTabgroupId() {
     if (this.tabgroups.length === 0) return -1
     return this.tabgroups[this.currentTabgroupIdx].id
-  }
-
-  resetForNext() {
-    this.liElems[this.currentTabgroupIdx].classList.remove("selected")
-    this.currentTabgroupIdx = this.initialTabgroupIdx
   }
 }
 

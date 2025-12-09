@@ -114,7 +114,12 @@ async function emptyOutDir() {
   }
 }
 
-const materialIcons = ["tab-light.svg", "tab-dark.svg"]
+const materialIcons = [
+  "tab-light.svg",
+  "tab-dark.svg",
+  "fold-light.svg",
+  "fold-dark.svg",
+]
 
 async function copyContentScriptAssetsAndUpdateManifest() {
   const assetsDir = path.resolve(commonConfig.root, "assets/icons/material")
@@ -138,23 +143,6 @@ async function copyContentScriptAssetsAndUpdateManifest() {
 }
 
 async function addJsSourceMapAccessibleForDev() {
-  // const builtManifestPath = path.resolve(
-  //   commonConfig.root,
-  //   commonConfig.build.outDir,
-  //   "manifest.json",
-  // )
-  // let builtManifest = await fs
-  //   .readFile(builtManifestPath, "utf8")
-  //   .then((txt) => JSON.parse(txt))
-  // const jsSourceMapResource = "*.js.map"
-  // builtManifest["web_accessible_resources"][0].resources.push(
-  //   jsSourceMapResource,
-  // )
-  // await fs.writeFile(
-  //   builtManifestPath,
-  //   JSON.stringify(builtManifest, null, 2),
-  //   "utf8",
-  // )
   await updateManifest((manifest) => {
     const jsSourceMapResource = "*.js.map"
     manifest["web_accessible_resources"][0].resources.push(jsSourceMapResource)

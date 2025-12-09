@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
     case "GET_CURRENT_TAB_GROUPS": {
       ;(async () => {
         const tabGroups = await chromeTabGroups.getCurrentWindowTabGroups()
-        if (__DEV) console.log("[tabGroups]", tabGroups)
+        if (__DEV) console.log("[tabGroups sorted]", tabGroups)
         sendBack(tabGroups)
       })()
       return true

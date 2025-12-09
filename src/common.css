@@ -195,9 +195,9 @@ body {
 
 /* @utility underline-a */
 /* 2px? */
-.underline {
+/* .underline {
   text-decoration: underline 1px;
-}
+} */
 
 @utility extension {
   @apply bg-(--extension) text-(--primary);

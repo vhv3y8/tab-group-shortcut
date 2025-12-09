@@ -5,11 +5,15 @@ export async function updateTabGroupName(groupId, groupName) {
 }
 
 export async function getCurrentWindowTabGroups() {
+  // get current window groups
   let groups = await chrome.tabGroups.query({
     windowId: chrome.windows.WINDOW_ID_CURRENT,
   })
+  if (__DEV) console.log("[groups before sort]", groups)
+  // get current window tabs
   const currentWindowTabs = await chrome.tabs.query({ currentWindow: true })
   if (__DEV) console.log("[currentWindowTabs]", currentWindowTabs)
+  // group tabs by groupId
   const groupedByGroupId = Object.groupBy(
     currentWindowTabs,
     ({ groupId }) => groupId,
@@ -18,8 +22,10 @@ export async function getCurrentWindowTabGroups() {
   // add tabsCount
   for (const [idx, { id }] of Object.entries(groups)) {
     groups[idx].tabsCount = groupedByGroupId[id]?.length || 0
+    // for index later
+    groups[idx].index = -1
   }
-  // add tab titles
+  // add tab titles combined
   let groupIdToTitlesCombined = {}
   Object.keys(groupedByGroupId).forEach((groupId) => {
     groupIdToTitlesCombined[groupId] = ""
@@ -36,24 +42,36 @@ export async function getCurrentWindowTabGroups() {
   }
   for (let i = 0; i < groups.length; i++)
     groups[i].tabTitlesCombined = groupIdToTitlesCombined[groups[i].id]
+  // set groups current window index
+  let currentIdx = 0
+  let groupIdToIndex = {}
+  Object.keys(groupedByGroupId).forEach((groupId) => {
+    groupIdToIndex[groupId] = -1
+  })
+  for (const { groupId } of currentWindowTabs) {
+    if (groupIdToIndex[groupId] === -1) {
+      groupIdToIndex[groupId] = currentIdx
+      currentIdx += 1
+    }
+  }
 
   if (__DEV) console.log("[groups after all set]", groups)
-  return groups.map(
-    ({ id, color, title, collapsed, tabsCount, tabTitlesCombined }) => ({
-      id,
-      color,
-      title,
-      folded: collapsed,
-      tabsCount,
-      tabTitlesCombined,
-    }),
+  return (
+    groups
+      // sort by current window appearance order
+      .sort((a, b) => groupIdToIndex[a.id] - groupIdToIndex[b.id])
+      .map(({ id, color, title, collapsed, tabsCount, tabTitlesCombined }) => ({
+        id,
+        color,
+        title,
+        folded: collapsed,
+        tabsCount,
+        tabTitlesCombined,
+      }))
   )
 }
 
 export async function getInitialTabGroupId(currentTabId) {
-  // const currentTabId = await chrome.tabs
-  //   .query({ currentWindow: true, active: true })
-  //   .then(({ id }) => id)
   if (__DEV) console.log("[getInitialTabGroupId: currentTabId]", currentTabId)
   if (!currentTabId) return -1
 
