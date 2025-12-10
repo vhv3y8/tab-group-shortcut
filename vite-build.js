@@ -22,7 +22,7 @@ const commonConfig = {
   },
   root: "src",
   build: {
-    outDir: "../dist2",
+    outDir: "../dist",
     sourcemap: !isProduction,
     rollupOptions: {
       output: {},
@@ -200,7 +200,7 @@ async function createExtensionZip() {
     `${manifest.name.toLowerCase().replaceAll(" ", "-")}-${manifest.version}.zip`,
   )
   archive.pipe(fsOuput)
-  archive.directory("dist2", false)
+  archive.directory("dist", false)
   return archive.finalize()
 }
 
