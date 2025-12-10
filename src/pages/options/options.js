@@ -47,6 +47,7 @@ let elems = {
 // initialize variables and ui with settings value
 document.addEventListener("DOMContentLoaded", async (e) => {
   const settings = await chromeStorage.getSettings()
+  if (__DEV) log("[settings]", settings)
   const { pageCommand, foldCommand } = settings
 
   // initialize variables
@@ -96,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   // 2. initialize non-checkbox ui
 
   // 1) command stuff
-  const isMac = userIsMac()
+  const isMac = await userIsMac()
   // const isMac = true
   const listenCommandRepresentation = byId("listenCommandRepresentation")
   const listenCommandPopupName = byId("listenCommandPopupName")
@@ -158,14 +159,16 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   // 2) other stuff
 
   // key string representation
-  const controlSpans = document.querySelectorAll(".ctrlOrControl")
-  controlSpans.forEach((span) => {
-    span.textContent = "Control"
-  })
-  const altOrCmdSpans = document.querySelectorAll(".altOrCmd")
-  altOrCmdSpans.forEach((span) => {
-    span.textContent = "Command"
-  })
+  if (isMac) {
+    const controlSpans = document.querySelectorAll(".ctrlOrControl")
+    controlSpans.forEach((span) => {
+      span.textContent = "Control"
+    })
+    const altOrCmdSpans = document.querySelectorAll(".altOrCmd")
+    altOrCmdSpans.forEach((span) => {
+      span.textContent = "Command"
+    })
+  }
 
   // copy shortcuts url
   const copyShortcutsUrl = byId("copyShortcutsUrl")
@@ -457,7 +460,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   elems.listenCommandSection = byId("listenCommand")
 
   // create ui representer for listen value
-  const isMac = userIsMac()
+  const isMac = await userIsMac()
   // const isMac = true
   const representListen = createCommandRepresenterFor({
     container: byId("listenCommandRepresentation"),

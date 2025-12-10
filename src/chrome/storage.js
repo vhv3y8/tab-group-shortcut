@@ -16,8 +16,8 @@ export const storageDefault = {
       metaKey: false,
       ctrlKey: true,
       altKey: false,
-      shiftKey: true,
-      key: "G",
+      shiftKey: false,
+      key: "B",
     },
     focusItemTabAfterUnfold: {
       enable: true,
@@ -94,12 +94,8 @@ export async function doStorageMigration() {
   return merged
 }
 
-/**
- * Helper function to merge storage object on extension update.
- * @param {object} defaults
- * @param {object} current
- * @returns {object}
- */
+// Utils
+
 export function deepMerge(defaults, current) {
   const result = { ...defaults }
   for (const key in current) {

@@ -125,17 +125,3 @@ export async function foldToggleTabgroup(groupId) {
   await chrome.tabGroups.update(groupId, { collapsed: !isFolded })
   return isFolded
 }
-
-// utils
-
-function reverse(a, s, e) {
-  while (s < e) (([a[s], a[e]] = [a[e], a[s]]), s++, e--)
-}
-
-function rotate(a, k) {
-  k %= a.length
-  reverse(a, 0, k - 1)
-  reverse(a, k, a.length - 1)
-  reverse(a, 0, a.length - 1)
-  return a
-}

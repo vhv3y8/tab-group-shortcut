@@ -8,7 +8,6 @@
   :host {
     /* dark */
     @variant dark {
-      /* --secondary: #a0a0a0; */
       --secondary: #b8b8b8;
     }
   }
@@ -35,7 +34,6 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  /* gap: 0.5rem 0.25rem; */
   gap: 0;
 
   label.radio {
@@ -82,22 +80,12 @@ label.option[for] {
 
   label {
     @apply select-none;
-
-    /* @variant hover {
-      @apply cursor-pointer;
-    } */
   }
-}
-
-/* components */
-
-@layer components {
 }
 
 /* utilities */
 
 @utility popupBtn {
-  /* @apply px-[0.5em] py-[1em]; */
   @apply px-[0.3em] py-[0.7em];
   @apply border-(--secondary) border-2;
   @apply text-base text-(--primary) font-[Ubuntu];
@@ -105,12 +93,6 @@ label.option[for] {
   @apply bg-(--bg);
   box-shadow: 3px 3px var(--secondary);
 
-  /* &.cancel {
-    @apply bg-(--extension);
-  }
-  &.save {
-    @apply bg-(--violet);
-  } */
   &.save {
     @apply border-(--secondary) bg-(--extension);
     box-shadow: 3px 3px var(--secondary);
@@ -123,8 +105,6 @@ label.option[for] {
 /* option section */
 @utility option {
   @apply flex flex-col flex-nowrap;
-  /* @apply bg-(--shadow); */
-  /* 2px solid var(--shadow) */
   @apply border-solid border-1 border-(--shadow);
   @apply py-[0.8em] px-[1.2em];
 
@@ -157,7 +137,7 @@ label.option[for] {
   }
 
   .description {
-    @apply text-(--secondary) leading-6;
+    @apply text-(--secondary) leading-7;
     @apply my-1;
   }
 }
@@ -239,7 +219,6 @@ label.option[for] {
 @utility meta {
   @apply hidden;
   @variant in-[.metaKey] {
-    /* @apply inline-flex items-center gap-0.5; */
     @apply inline-flex;
   }
 }
@@ -247,7 +226,6 @@ label.option[for] {
 @utility ctrl {
   @apply hidden;
   @variant in-[.ctrlKey] {
-    /* @apply inline-flex items-center gap-0.5; */
     @apply inline-flex;
   }
 }
@@ -255,7 +233,6 @@ label.option[for] {
 @utility alt {
   @apply hidden;
   @variant in-[.altKey] {
-    /* @apply inline-flex items-center gap-0.5; */
     @apply inline-flex;
   }
 }
@@ -263,51 +240,10 @@ label.option[for] {
 @utility shift {
   @apply hidden;
   @variant in-[.shiftKey] {
-    /* @apply inline-flex items-center gap-0.5; */
     @apply inline-flex;
   }
 }
 
 @utility inputKey {
   @apply px-[0.2em];
-}
-
-/*  */
-
-input[type="range"] {
-  -webkit-appearance: none;
-  width: 200px;
-  height: 0.5em;
-  background: var(--shadow);
-  border-radius: 4px;
-}
-
-/* 트랙 */
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 0.5em;
-  background: var(--shadow);
-  border-radius: 4px;
-}
-input[type="range"]::-moz-range-track {
-  height: 0.5em;
-  background: var(--shadow);
-  border-radius: 4px;
-}
-
-/* 썸 */
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #333;
-  cursor: pointer;
-  margin-top: -6px; /* 위치 조정 */
-}
-input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #333;
-  cursor: pointer;
 }

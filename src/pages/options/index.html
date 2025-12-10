@@ -143,7 +143,7 @@
       </button>
     </h3>
 
-    <p class="underline underline-offset-2 leading-[1.8]">
+    <p class="underline underline-offset-2 leading-[1.8] mt-4">
       If you want to apply <span class="refresh">changes like command</span> to <span class="refresh">existing
         tabs</span>, you have to <span class="refresh">refresh</span> them!
     </p>
@@ -232,7 +232,8 @@
           You can choose to set name or not with <span class="key">Enter</span> and <span class="key">Esc</span>.
         </p>
         <p class="description">
-          Only works when focusing a tab that command is NOT restricted.
+          Only works when focusing a tab that command is NOT restricted. (doesn't work at pages like chrome://, chrome
+          web store)
         </p>
       </label>
 
@@ -250,7 +251,7 @@
         </label>
 
         <p class="description">
-          This command even works at pages where page command is restricted (like chrome:// pages).
+          This command even works at pages where page command is restricted (like chrome://, chrome web store pages).
         </p>
         <p class="description flex flex-wrap items-center gap-2">
           You can change predefined command for this at
@@ -293,13 +294,14 @@
 
         <p class="description">Fold and unfold tab groups in the current window. Basically you use it like <span
             class="key altOrCmd">Alt</span> <span class="key">Tab</span>.</p>
-        <p class="description">Pressing command will toggle fold for current or previous tab group, relative to the
-          current tab.
+        <p class="description">
+          Initial selection is: If tab is in the tabgroup it starts from there. If not, starts from previous group (so
+          that you can toggle around like <span class="key altOrCmd">Alt</span> <span class="key">Tab</span>).
         </p>
-        <p class="description">Holding and pressing command shows popup with current window tabgroups, and selecting one
-          will toggle
-          fold for
-          that group.</p>
+        <p class="description">
+          Only works when focusing a tab that command is NOT restricted. (doesn't work at pages like chrome://, chrome
+          web store)
+        </p>
       </label>
 
       <!--  -->
@@ -459,7 +461,7 @@
             </div>
           </label>
           <p class="description">
-            By default popup follows system preference. (CSS prefers-color-scheme)
+            By default popup appearance follows system preference. (CSS prefers-color-scheme)
           </p>
         </section>
       </article>

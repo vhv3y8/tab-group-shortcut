@@ -63,65 +63,6 @@ export function createCommandRepresenterFor({ container, isMac }) {
   }
 }
 
-// // // // // // // // // // // // // // // // // // // //
-
-/**
- * Binds <input type="checkbox"> switch element to storage setting value.
- * @param {HTMLInputElement} element
- * @param {string} settingName
- */
-export async function bindInputElemToSettingValue(element, settingName) {
-  // set switch value
-  let settings = await chromeStorage.getSettings()
-  if (settings[settingName]) {
-    element.checked = true
-  }
-
-  // event listener for switch click
-  element.addEventListener("change", async (e) => {
-    // get setting every time when switch is clicked
-    // so that this doesn't overwrite other values changed elsewhere
-    let settings = await chromeStorage.getSettings()
-    settings[settingName] = e.target.checked
-
-    await chrome.storage.sync.set({ settings })
-  })
-}
-
-/* Options Page */
-
-/**
- * Test if key is commandable. used at options page to listen.
- * @param {string} key
- * @returns {boolean}
- */
-export const keyIsCommandable = (key) =>
-  key.length === 1 && /^[\S\s]$/.test(key)
-
-const shiftSymbols = new Set([
-  "!",
-  "@",
-  "#",
-  "$",
-  "%",
-  "^",
-  "&",
-  "*",
-  "(",
-  ")",
-  "{",
-  "}",
-  "_",
-  "+",
-  ":",
-  '"',
-  "<",
-  ">",
-  "?",
-  "|",
-  "~",
-])
-
 // Development Only stuff, tree shaked at production
 // check vite-build.js config for define.__DEV
 

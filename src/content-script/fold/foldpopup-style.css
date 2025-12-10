@@ -4,30 +4,6 @@
 /* and compared with browser screenshot capture. (close ones are light 600 dark 300) */
 /* but doesn't know exactly what colors are applied in chromium codebase.  */
 @layer theme {
-  /* maybe tabgroup chip color should always follow system preference */
-  /* :host(.light) {
-    --tg-grey: #80868b;
-    --tg-blue: #1a73e8;
-    --tg-red: #d93025;
-    --tg-yellow: #f9ab00;
-    --tg-green: #1e8e3e;
-    --tg-pink: #e52592;
-    --tg-purple: #9334e6;
-    --tg-cyan: #12b5cb;
-    --tg-orange: #e8710a;
-  }
-  :host(.dark) {
-    --tg-grey: #dadce0;
-    --tg-blue: #8ab4f8;
-    --tg-red: #f28b82;
-    --tg-yellow: #fdd663;
-    --tg-green: #81c995;
-    --tg-pink: #ff8bcb;
-    --tg-purple: #c58af9;
-    --tg-cyan: #78d9ec;
-    --tg-orange: #fcad70;
-  } */
-
   @media (prefers-color-scheme: light) {
     :host {
       --tg-grey: #80868b;
@@ -90,8 +66,8 @@
   box-shadow: 0 0 5px var(--shadow);
   @apply m-0 p-0 list-none;
   @apply flex flex-col flex-nowrap gap-0;
-  @apply min-w-[10em] max-w-[20em];
-  @apply font-[Ubuntu] text-sm text-(--primary);
+  @apply min-w-[15em] max-w-[20em];
+  @apply font-[Ubuntu] text-[15px] text-(--primary);
   @apply bg-(--bg);
   @apply select-none;
 

@@ -94,6 +94,7 @@ window.addEventListener("keydown", async (e) => {
       fold.allCommandKeyDown(commandInput) &&
       fold.checkPassedThresholdAndSet()
     ) {
+      e.preventDefault()
       if (!isShowingFoldPopup) {
         isShowingFoldPopup = true
         // show popup, current group
@@ -106,7 +107,6 @@ window.addEventListener("keydown", async (e) => {
         if (__DEV) log("[moving to next group]")
       }
     } else if (!isShowingFoldPopup && fold.allModifierKeyDown(commandInput)) {
-      e.preventDefault()
       if (__DEV) log("fetching tabgroups again...")
       const tabgroups = await chromeRuntime.requestCurrentWindowTabGroups()
       await popup.updateGroupsAndIndexes(tabgroups)
