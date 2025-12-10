@@ -34,7 +34,8 @@ chrome.action.onClicked.addListener(async () => {
 // handle messages sent from content script
 // listener have to return true to make other side able to await for sendBack value
 chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
-  switch (msg.action) {
+  const senderIsTab = sender.tab && 0 < sender.tab.id
+  switch (senderIsTab && msg.action) {
     case "GET_SETTINGS": {
       // listener have to return true to make other side able to await for sendBack value
       ;(async () => {
@@ -166,6 +167,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
           }
         }
       })()
+      break
+    }
+    default: {
       break
     }
   }

@@ -114,7 +114,7 @@ async function emptyOutDir() {
   }
 }
 
-const materialIcons = [
+const contentMaterialIcons = [
   "tab-light.svg",
   "tab-dark.svg",
   "fold-light.svg",
@@ -126,7 +126,7 @@ async function copyContentScriptAssetsAndUpdateManifest() {
   const outDir = path.resolve(commonConfig.root, commonConfig.build.outDir)
   // copy files
   await Promise.all(
-    [materialIcons]
+    [contentMaterialIcons]
       .flat(Infinity)
       .map((fileName) =>
         fs.copyFile(
@@ -137,7 +137,9 @@ async function copyContentScriptAssetsAndUpdateManifest() {
   )
   // add to web accessibles
   await updateManifest((manifest) => {
-    manifest["web_accessible_resources"][0].resources.push(...materialIcons)
+    manifest["web_accessible_resources"][0].resources.push(
+      ...contentMaterialIcons,
+    )
     return manifest
   })
 }
@@ -231,7 +233,10 @@ async function run() {
   }
 
   // after
-  logInfo("copy content script assets", "after")
+  logInfo(
+    "copy content script assets and add to manifest web accessibles",
+    "after",
+  )
   await copyContentScriptAssetsAndUpdateManifest()
   logInfo("done", "after")
 

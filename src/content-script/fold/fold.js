@@ -21,9 +21,7 @@ export class ToggleGroupPopup {
     this.positionNumber = 1
 
     if (__DEV)
-      log("[{ shadowHost, rootElem, tabgroups, initialTabgroupIdx }]", {
-        shadowHost,
-        rootElem,
+      log("[{ tabgroups, initialTabgroupIdx }]", {
         tabgroups,
         initialTabgroupIdx,
       })
@@ -54,7 +52,7 @@ export class ToggleGroupPopup {
       liElems.push(listItem)
 
       if (initialGroupId !== -1 && id === initialGroupId) {
-        initialTabgroupIdx = idx
+        initialTabgroupIdx = parseInt(idx)
       }
     }
 
@@ -94,7 +92,7 @@ export class ToggleGroupPopup {
       liElems.push(listItem)
 
       if (initialGroupId !== -1 && id === initialGroupId) {
-        initialTabgroupIdx = idx
+        initialTabgroupIdx = parseInt(idx)
       }
     }
     // update fields
@@ -128,7 +126,6 @@ export class ToggleGroupPopup {
     `
     const rootElem = shadowRoot.querySelector("section")
     rootElem.style.display = "none"
-    rootElem.style.pointerEvents = "none"
 
     const { width: scrollBarWidth } = getScrollbarSize()
     if (getScrollbarSide() === "left") {
@@ -160,7 +157,7 @@ export class ToggleGroupPopup {
 
         <img src="${extensionUrlPrefix.concat("tab-light.svg")}" alt="| " class="light:inline dark:hidden size-4"></img>
         <img src="${extensionUrlPrefix.concat("tab-dark.svg")}" alt="| " class="light:hidden dark:inline size-4"></img>
-        <span class="ml-1">${tabsCount}</span>
+        <span class="tabsCount ml-1">${tabsCount}</span>
       </div>
     `
     li.id = `groupIdx${idx}`

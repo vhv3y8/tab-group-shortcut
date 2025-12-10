@@ -1,15 +1,3 @@
-// export async function requestPageCommand() {
-//   return chrome.runtime.sendMessage({
-//     action: "GET_PAGE_COMMAND",
-//   })
-// }
-
-// export async function requestFoldCommandAndEnabled() {
-//   return chrome.runtime.sendMessage({
-//     action: "GET_FOLD_ENABLED_AND_COMMAND",
-//   })
-// }
-
 export async function requestSettings() {
   return chrome.runtime.sendMessage({
     action: "GET_SETTINGS",

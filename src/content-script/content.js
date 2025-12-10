@@ -139,6 +139,7 @@ function createFoldPopupShadowHost() {
   shadowHost.style.height = "100vh"
   // set max z-index, so that its always shown
   shadowHost.style.zIndex = "2147483647"
+  shadowHost.style.pointerEvents = "none"
   document.body.appendChild(shadowHost)
   return shadowHost
 }
