@@ -172,20 +172,20 @@ async function updateManifest(updateHook) {
 
 async function copyLicenseFiles() {
   const outDir = path.resolve(commonConfig.root, commonConfig.build.outDir)
-  const licenseHome = path.resolve(commonConfig.root, "assets")
-
-  const licenseFileName = "LICENSE"
   const wholeLicensesFolder = "licenses"
-
+  // copy third party license notices
+  const thirdPatyLicenseHome = path.resolve(commonConfig.root, "assets")
   await fs.copyFile(
-    path.resolve(licenseHome, licenseFileName),
-    path.resolve(outDir, licenseFileName),
+    path.resolve(thirdPatyLicenseHome, "LICENSE"),
+    path.resolve(outDir, "NOTICE"),
   )
   await fs.cp(
-    path.resolve(licenseHome, wholeLicensesFolder),
+    path.resolve(thirdPatyLicenseHome, wholeLicensesFolder),
     path.resolve(outDir, wholeLicensesFolder),
     { recursive: true },
   )
+  // copy license of this software
+  await fs.copyFile(path.resolve("LICENSE"), path.resolve(outDir, "LICENSE"))
 }
 
 async function createExtensionZip() {
