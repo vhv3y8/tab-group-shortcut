@@ -1,17 +1,23 @@
+import * as chromeTabs from "./tabs"
+
 export async function updateTabGroupName(groupId, groupName) {
   return chrome.tabGroups.update(groupId, {
     title: groupName,
   })
 }
 
-export async function getCurrentWindowTabGroups() {
-  // get current window groups
-  let groups = await chrome.tabGroups.query({
+export async function queryCurrentWindowTabGroups() {
+  return chrome.tabGroups.query({
     windowId: chrome.windows.WINDOW_ID_CURRENT,
   })
+}
+
+export async function getCurrentWindowTabGroups() {
+  // get current window groups
+  let groups = await queryCurrentWindowTabGroups()
   if (__DEV) console.log("[groups before sort]", groups)
   // get current window tabs
-  const currentWindowTabs = await chrome.tabs.query({ currentWindow: true })
+  const currentWindowTabs = await chromeTabs.getCurrentWindowTabs()
   if (__DEV) console.log("[currentWindowTabs]", currentWindowTabs)
   // group tabs by groupId
   const groupedByGroupId = Object.groupBy(
@@ -76,27 +82,42 @@ export async function getInitialTabGroupId(currentTabId) {
   if (!currentTabId) return -1
 
   const currentWindowTabs = await chrome.tabs.query({ currentWindow: true })
-  const currentTabIdx = currentWindowTabs
-    .map(({ id }) => id)
-    .indexOf(currentTabId)
-  if (!currentTabIdx) return -1
-  if (__DEV) console.log("[getInitialTabGroupId: currentTabIdx]", currentTabIdx)
+  const currentTabIndex = currentWindowTabs.find(
+    ({ id }) => id === currentTabId,
+  ).index
 
+  // return group id of current tab if it exists
+  const currentTabIsInGroup = currentWindowTabs[currentTabIndex].groupId !== -1
+  if (currentTabIsInGroup) {
+    if (__DEV) console.log("[returning current group id]")
+    return currentWindowTabs[currentTabIndex].groupId
+  }
+
+  // return first previous group id relative to current tab
+  for (let i = currentTabIndex; 0 <= i; i--) {
+    const currentTab = currentWindowTabs[i]
+    if (__DEV)
+      console.log(
+        "[current tab title, group id]",
+        currentTab.title,
+        currentTab.groupId,
+      )
+    if (currentTab.groupId !== -1) {
+      if (__DEV)
+        console.log(
+          "[returning previous group id] containing tab title",
+          currentTab.title,
+        )
+      return currentTab.groupId
+    }
+  }
+  // return first group
   if (__DEV)
     console.log(
-      "[getInitialTabGroupId: groupIds]",
-      currentWindowTabs.map(({ groupId }) => groupId),
+      "[returning first group id]",
+      currentWindowTabs.find(({ groupId }) => groupId !== -1).groupId,
     )
-  const reorderedGroupIds = rotate(
-    currentWindowTabs,
-    (currentTabIdx + currentWindowTabs.length) % currentWindowTabs.length,
-  ).map(({ groupId }) => groupId)
-  if (__DEV)
-    console.log("[getInitialTabGroupId: reorderedGroupIds]", reorderedGroupIds)
-  const initialTabGroupId = reorderedGroupIds.find(({ id }) => id !== -1)
-  if (__DEV)
-    console.log("[getInitialTabGroupId: initialTabGroupId]", initialTabGroupId)
-  return initialTabGroupId || -1
+  return currentWindowTabs.find(({ groupId }) => groupId !== -1).groupId
 }
 
 export async function foldToggleTabgroup(groupId) {

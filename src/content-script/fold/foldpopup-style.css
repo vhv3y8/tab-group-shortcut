@@ -153,11 +153,8 @@
 }
 
 @utility selected {
-  /* @apply bg-(--shadow); */
-  /* @apply bg-(--extension); */
-
   @variant light {
-    @apply bg-[#aaa];
+    @apply bg-[#bbb];
   }
   @variant dark {
     @apply bg-[#555];

@@ -104,10 +104,66 @@ chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
             }
           }
         } else {
-          // move to next tab.. tab focus lives even when tabgroup containing it is folded.
-          // chrome browser default behavior seems like:
+          // move to next tab. tab focus lives even when tabgroup containing it is folded.
+          // chrome browser behavior seems like:
           // move to next tab after folded tabgroup, or previous tab before tabgroup (if there is none after).
           // and if all tabs are in tabgroup and no tab is active after fold (e.g. all tabs are in single group, or there are other groups but they are all folded), create new tab and focus.
+          const currentWindowTabs = await chromeTabs.getCurrentWindowTabs()
+          if (__DEV)
+            console.log("[after fold] currentWindowTabs", currentWindowTabs)
+          const { index: focusedTabIndex } = currentWindowTabs.find(
+            ({ active }) => active,
+          )
+          if (__DEV)
+            console.log("[after fold] focusedTabIndex", focusedTabIndex)
+          const groupIdToCollapsed = { "-1": false }
+          const currentWindowGroups =
+            await chromeTabGroups.queryCurrentWindowTabGroups()
+          if (__DEV)
+            console.log("[after fold] currentWindowGroups", currentWindowGroups)
+          for (const { id, collapsed } of currentWindowGroups)
+            groupIdToCollapsed[id] = collapsed
+          if (__DEV)
+            console.log("[after fold] groupIdToCollapsed", groupIdToCollapsed)
+          // check next tabs and focus if its possible
+          let foundNextTab = false
+          for (let i = focusedTabIndex; i < currentWindowTabs.length; i++) {
+            if (__DEV)
+              console.log("[after fold] next", currentWindowTabs[i].title)
+            const currentTabGroupId = currentWindowTabs[i].groupId
+            if (__DEV)
+              console.log("[after fold] currentTabGroupId", currentTabGroupId)
+            if (groupIdToCollapsed[currentTabGroupId.toString()]) continue
+
+            if (__DEV)
+              console.log("[after fold] found", currentWindowTabs[i].id)
+            foundNextTab = true
+            chrome.tabs.update(currentWindowTabs[i].id, { active: true })
+            break
+          }
+          if (!foundNextTab) {
+            // check previous tabs and focus if its possible
+            let foundPreviousTab = false
+            for (let i = focusedTabIndex - 1; 0 <= i; i--) {
+              if (__DEV)
+                console.log("[after fold] previous", currentWindowTabs[i].title)
+              const currentTabGroupId = currentWindowTabs[i].groupId
+              if (__DEV)
+                console.log("[after fold] currentTabGroupId", currentTabGroupId)
+              if (groupIdToCollapsed[currentTabGroupId.toString()]) continue
+
+              if (__DEV)
+                console.log("[after fold] found", currentWindowTabs[i].id)
+              foundPreviousTab = true
+              chrome.tabs.update(currentWindowTabs[i].id, { active: true })
+              return
+            }
+
+            if (!foundPreviousTab) {
+              // create new tab and focus
+              chrome.tabs.create({ active: true })
+            }
+          }
         }
       })()
       break

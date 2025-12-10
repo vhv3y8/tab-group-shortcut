@@ -26,6 +26,10 @@ export async function queryFocusedTab() {
     .then((tabs) => tabs[0])
 }
 
+export async function getCurrentWindowTabs() {
+  return chrome.tabs.query({ currentWindow: true })
+}
+
 /**
  * query selected tabs and group/ungroup them based on current state.
  * @returns {Promise<boolean>} Resolves into boolean that tells if this created a tab group.

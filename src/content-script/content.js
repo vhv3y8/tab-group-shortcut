@@ -39,11 +39,11 @@ window.addEventListener("keydown", async (e) => {
 
 // message from service worker force command
 chrome.runtime.onMessage.addListener((msg) => {
-  if (__DEV) log("[force command message]")
   if (msg.action === "OPEN_NAMING_POPUP") {
     openNamingPopupAndHandle()
     if (__DEV) log("[OPEN_NAMING_POPUP]")
   }
+  if (__DEV) log("[force command message]")
 })
 
 // group naming popup
@@ -56,7 +56,6 @@ function openNamingPopupAndHandle() {
 
 // 2. fold unfold command
 
-let shadowRoot
 let loadedFoldPopupFiles = false
 let isShowingFoldPopup = false
 let popup
@@ -65,6 +64,14 @@ window.addEventListener("keydown", async (e) => {
   if (foldCommandEnabled) {
     const commandInput = createCommandInput(e)
 
+    // cancel with esc
+    if (isShowingFoldPopup && fold.escapePressed(commandInput)) {
+      if (__DEV) log("[escape]")
+      isShowingFoldPopup = false
+      popup.hidePopup()
+      return
+    }
+    // handle command
     if (!loadedFoldPopupFiles) {
       if (fold.allModifierKeyDown(commandInput)) {
         e.preventDefault()
@@ -79,7 +86,7 @@ window.addEventListener("keydown", async (e) => {
         // apply setting values
         popup.updatePopupPosition(foldPopup.positionNumber)
         if (foldPopup.explicitDarkmode.enable) {
-          popup.setExplicitDarkmode(darkmode)
+          popup.setExplicitDarkmode(foldPopup.explicitDarkmode.darkmode)
         }
         if (__DEV) log("[popup initialized]", popup)
       }
@@ -133,7 +140,6 @@ function createFoldPopupShadowHost() {
   // set max z-index, so that its always shown
   shadowHost.style.zIndex = "2147483647"
   document.body.appendChild(shadowHost)
-  if (__DEV) log("[create shadow host : shadowHost]", shadowHost)
   return shadowHost
 }
 

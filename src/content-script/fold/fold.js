@@ -8,6 +8,7 @@ export class ToggleGroupPopup {
   initialTabgroupIdx
   currentTabgroupIdx
   liElems
+  positionNumber
 
   constructor(shadowHost, rootElem, tabgroups, initialTabgroupIdx, liElems) {
     this.host = shadowHost
@@ -16,6 +17,8 @@ export class ToggleGroupPopup {
     this.initialTabgroupIdx = initialTabgroupIdx
     this.currentTabgroupIdx = initialTabgroupIdx
     this.liElems = liElems
+    // use updatePopupPosition to update
+    this.positionNumber = 1
 
     if (__DEV)
       log("[{ shadowHost, rootElem, tabgroups, initialTabgroupIdx }]", {
@@ -66,6 +69,7 @@ export class ToggleGroupPopup {
     )
   }
 
+  // reset
   async updateGroupsAndIndexes(tabgroups) {
     const initialGroupId = await chromeRuntime.requestInitialTabGroupId()
     const extensionUrlPrefix = chrome.runtime.getURL("")
@@ -124,6 +128,7 @@ export class ToggleGroupPopup {
     `
     const rootElem = shadowRoot.querySelector("section")
     rootElem.style.display = "none"
+    rootElem.style.pointerEvents = "none"
 
     const { width: scrollBarWidth } = getScrollbarSize()
     if (getScrollbarSide() === "left") {
@@ -150,8 +155,8 @@ export class ToggleGroupPopup {
       <p class="title grow whitespace-nowrap overflow-hidden text-ellipsis">
       </p>
       <div class="tabs flex items-center">
-        <img src="${extensionUrlPrefix.concat("fold-light.svg")}" alt="| FOLDED" class="hidden light:group-[.folded]:inline size-4.5 mr-2"></img>
-        <img src="${extensionUrlPrefix.concat("fold-dark.svg")}" alt="| FOLDED" class="hidden dark:group-[.folded]:inline size-4.5 mr-2"></img>
+        <img src="${extensionUrlPrefix.concat("fold-light.svg")}" alt="| FOLDED" class="hidden dark;hidden light:group-[.folded]:inline size-4.5 mr-2"></img>
+        <img src="${extensionUrlPrefix.concat("fold-dark.svg")}" alt="| FOLDED" class="hidden light:hidden dark:group-[.folded]:inline size-4.5 mr-2"></img>
 
         <img src="${extensionUrlPrefix.concat("tab-light.svg")}" alt="| " class="light:inline dark:hidden size-4"></img>
         <img src="${extensionUrlPrefix.concat("tab-dark.svg")}" alt="| " class="light:hidden dark:inline size-4"></img>
@@ -167,10 +172,29 @@ export class ToggleGroupPopup {
 
   // show and hide popup
   showPopup() {
+    this.host.style.display = ""
     this.rootElem.style.display = ""
+
+    // reverse scale tab zoom ratio to show consistent size popup
+    const positionNumberToTransformOrigin = {
+      1: "top left",
+      2: "top center",
+      3: "top right",
+      4: "center left",
+      5: "center",
+      6: "center right",
+      7: "bottom left",
+      8: "bottom center",
+      9: "bottom right",
+    }
+    const zoomRatio = window.outerWidth / window.innerWidth
+    this.rootElem.style.transformOrigin =
+      positionNumberToTransformOrigin[this.positionNumber]
+    this.rootElem.style.transform = `scale(${1 / zoomRatio})`
   }
   hidePopup() {
-    this.rootElem.style.display = "none"
+    this.host.style.display = "none"
+    this.rootElem.style.display = ""
   }
 
   updatePopupPosition(number) {
@@ -186,6 +210,7 @@ export class ToggleGroupPopup {
       "popup-position-9",
     )
     this.rootElem.classList.add(`popup-position-${number}`)
+    this.positionNumber = number
   }
 
   // setFontSize(fontSize) {
@@ -220,14 +245,11 @@ export class ToggleGroupPopup {
 export class ToggleGroupCommand {
   moveThreshold = 50
   foldCommand = {}
-  isAllCommandKeyDown = false
   lastThresholdUpdatedAt = null
 
   constructor(foldCommand) {
     this.foldCommand = foldCommand
   }
-
-  // basic
 
   allModifierKeyDown(commandInput) {
     // if all modiifers are down
@@ -251,6 +273,13 @@ export class ToggleGroupCommand {
     )
   }
 
+  escapePressed(commandInput) {
+    if (commandInput.key.toUpperCase() === "ESCAPE") {
+      this.lastThresholdUpdatedAt = null
+      return true
+    } else return false
+  }
+
   checkPassedThresholdAndSet() {
     const current = performance.now()
     if (this.lastThresholdUpdatedAt === null) {
@@ -260,12 +289,6 @@ export class ToggleGroupCommand {
       this.lastThresholdUpdatedAt = current
       return true
     } else return false
-  }
-
-  // higher level
-
-  shouldMoveToNext() {
-    return this.isAllCommandKeyDown
   }
 }
 
