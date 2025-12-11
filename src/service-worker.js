@@ -58,8 +58,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendBack) => {
       return true
     }
     case "GET_FOLD_POPUP_URLS": {
-      const [htmlUrl, cssUrl] = chromeRuntime.getRuntimeFoldPopupUrls()
-      sendBack([htmlUrl, cssUrl])
+      const [cssUrl] = chromeRuntime.getRuntimeFoldPopupUrls()
+      sendBack([cssUrl])
       return true
     }
     case "GET_CURRENT_TAB_GROUPS": {

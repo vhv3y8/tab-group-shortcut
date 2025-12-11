@@ -107,11 +107,11 @@ export class ToggleGroupPopup {
     // create shadow dom
     const shadowRoot = shadowHost.attachShadow({ mode: "closed" })
     // get urls
-    const [htmlUrl, cssUrl] = await chromeRuntime.requestFoldPopupUrls()
-    if (__DEV) log("fetched urls", htmlUrl, cssUrl)
+    const [cssUrl] = await chromeRuntime.requestFoldPopupUrls()
+    if (__DEV) log("fetched urls", cssUrl)
     // get texts
-    const [html, css] = await Promise.all(
-      [htmlUrl, cssUrl].map((url) => fetch(url).then((r) => r.text())),
+    const [css] = await Promise.all(
+      [cssUrl].map((url) => fetch(url).then((r) => r.text())),
     )
     // if (__DEV) log("raw", html, css)
 
@@ -119,11 +119,17 @@ export class ToggleGroupPopup {
     shadowRoot.innerHTML = `
       <html>
       <head>
-        <style>${css}</style>
+        <style></style>
       </head>
-      <body>${html}</body>
+      <body>
+        <section class="rootElem">
+          <ul id="groupList">
+          </ul>
+        </section>
+      </body>
       </html>
     `
+    shadowRoot.querySelector("style").textContent = css
     const rootElem = shadowRoot.querySelector("section")
     rootElem.style.display = "none"
 

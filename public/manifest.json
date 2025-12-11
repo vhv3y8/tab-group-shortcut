@@ -32,10 +32,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [
-        "content-script/fold/foldpopup.html",
-        "foldpopup-style.css"
-      ],
+      "resources": ["foldpopup-style.css"],
       "matches": ["<all_urls>"]
     }
   ]

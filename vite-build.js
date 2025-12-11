@@ -212,7 +212,6 @@ const htmlEntries = [
   { tutorial: "src/pages/tutorial/index.html" },
   { options: "src/pages/options/index.html" },
   { update_notes: "src/pages/update_notes/index.html" },
-  { foldpopup: "src/content-script/fold/foldpopup.html" },
   { "foldpopup-style": "src/content-script/fold/foldpopup-style.css" },
 ]
 

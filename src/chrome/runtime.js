@@ -41,9 +41,5 @@ export async function requestFoldToggleTabgroup(groupId) {
 // service worker
 
 export function getRuntimeFoldPopupUrls() {
-  return [
-    chrome.runtime.getURL("content-script/fold/foldpopup.html"),
-    chrome.runtime.getURL("foldpopup-style.css"),
-    chrome.runtime.getURL(""),
-  ]
+  return [chrome.runtime.getURL("foldpopup-style.css")]
 }
