@@ -1,8 +1,15 @@
-- Press 'Ctrl+G' to group current tab or selected tabs.
-- Ungroup, or combine tabs into group with same command.
-- Force with 'Ctrl+Q' command.
+- Press 'Ctrl/Control+G' to group / ungroup current tab or selected tabs.
+- Set "open naming popup" option to show popup after creating tab group.
+- Enable fold / unfold command to toggle tabgroups like Alt/Command+Tab.
+- Force group/ungroup with "Ctrl/Control+Q", which even works at tabs like chrome:// pages, extension pages and chrome web store.
+- You can change all commands at options page.
 
-Click extension icon to open help page.
+Click extension icon to open information page.
+
+Tips:
+- After changing some options, you probably want to refresh existing tabs if you want to apply changes in them.
+- Group and Fold command doesn't work at tabs like chrome:// pages(including New tab page), extension page and chrome web store pages. Move to other tabs using browser command Ctrl/Control+Tab, Ctrl/Control+Shift+Tab and use command there.
+- If something doesn't work, try refreshing the tab.
 
 v1.4
 - Added Fold / Unfold Command to toggle tab groups in current window.
