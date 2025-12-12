@@ -14,17 +14,28 @@ chrome.runtime.onInstalled.addListener(async (info) => {
       break
     }
     case "update": {
-      // do migration, and get result object to do stuff
-      const mergedResult = await chromeStorage.doStorageMigration()
-      // open update notes page based on setting
-      if (mergedResult.settings.openUpdateNotesPageOnExtensionUpdate) {
-        await chromeTabs.openUpdateNotesPage()
+      // if there is storage change, it must be major/minor update
+      if (!currentUpdateWasPatch()) {
+        if (__DEV) console.log("[major / minor update]")
+        // do migration, and get result object to do stuff
+        const mergedResult = await chromeStorage.doStorageMigration()
+        // open update notes page based on setting
+        if (mergedResult.settings.openUpdateNotesPageOnExtensionUpdate) {
+          await chromeTabs.openUpdateNotesPage()
+        }
       }
       break
     }
   }
   if (__DEV) console.log("[tab group shortcut: onInstalled] info", info)
 })
+
+function currentUpdateWasPatch() {
+  const version = chrome.runtime.getManifest().version
+  if (__DEV)
+    console.log("[manifest version]", version, version.split(".").length)
+  return 3 <= version.split(".").length
+}
 
 // extension icon click
 chrome.action.onClicked.addListener(async () => {
