@@ -15,7 +15,7 @@ chrome.runtime.onInstalled.addListener(async (info) => {
     }
     case "update": {
       // if there is storage change, it must be major/minor update
-      if (!currentUpdateWasPatch()) {
+      if (!currentUpdateWasPatchOnly(info.previousVersion)) {
         if (__DEV) console.log("[major / minor update]")
         // do migration, and get result object to do stuff
         const mergedResult = await chromeStorage.doStorageMigration()
@@ -30,11 +30,15 @@ chrome.runtime.onInstalled.addListener(async (info) => {
   if (__DEV) console.log("[tab group shortcut: onInstalled] info", info)
 })
 
-function currentUpdateWasPatch() {
-  const version = chrome.runtime.getManifest().version
-  if (__DEV)
-    console.log("[manifest version]", version, version.split(".").length)
-  return 3 <= version.split(".").length
+function currentUpdateWasPatchOnly(previousVersion) {
+  const current = chrome.runtime.getManifest().version.split(".").map(Number)
+  const previous = previousVersion.split(".").map(Number)
+  const [prevMajor, prevMinor = 0, prevPatch = 0] = previous
+  const [currMajor, currMinor = 0, currPatch = 0] = current
+  if (__DEV) console.log("[version from to]", previous, current)
+  return (
+    prevMajor === currMajor && prevMinor === currMinor && prevPatch <= currPatch
+  )
 }
 
 // extension icon click
