@@ -117,7 +117,7 @@ export async function getInitialTabGroupId(currentTabId) {
       "[returning first group id]",
       currentWindowTabs.find(({ groupId }) => groupId !== -1).groupId,
     )
-  return currentWindowTabs.find(({ groupId }) => groupId !== -1).groupId
+  return currentWindowTabs.find(({ groupId }) => groupId !== -1).groupId || -1
 }
 
 export async function foldToggleTabgroup(groupId) {

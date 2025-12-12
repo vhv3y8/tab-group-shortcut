@@ -57,12 +57,20 @@ function openNamingPopupAndHandle() {
 // 2. fold unfold command
 
 let loadedFoldPopupFiles = false
+let loadingInProgress = false
 let isShowingFoldPopup = false
 let popup
 
 window.addEventListener("keydown", async (e) => {
   if (foldCommandEnabled) {
     const commandInput = createCommandInput(e)
+    if (__DEV)
+      log("[command input]", commandInput, {
+        loadedFoldPopupFiles,
+        loadingInProgress,
+        isShowingFoldPopup,
+        popup,
+      })
 
     // cancel with esc
     if (isShowingFoldPopup && fold.escapePressed(commandInput)) {
@@ -73,9 +81,9 @@ window.addEventListener("keydown", async (e) => {
     }
     // handle command
     if (!loadedFoldPopupFiles) {
-      if (fold.allModifierKeyDown(commandInput)) {
+      if (!loadingInProgress && fold.allModifierKeyDown(commandInput)) {
         e.preventDefault()
-        loadedFoldPopupFiles = true
+        loadingInProgress = true
         if (__DEV) log("loading and attaching popup...")
         const tabgroups = await chromeRuntime.requestCurrentWindowTabGroups()
         if (__DEV) log("[tabgroups]", tabgroups)
@@ -88,6 +96,7 @@ window.addEventListener("keydown", async (e) => {
         if (foldPopup.explicitDarkmode.enable) {
           popup.setExplicitDarkmode(foldPopup.explicitDarkmode.darkmode)
         }
+        loadedFoldPopupFiles = true
         if (__DEV) log("[popup initialized]", popup)
       }
     } else if (

@@ -98,7 +98,7 @@ export class ToggleGroupPopup {
     // update fields
     this.tabgroups = tabgroups
     this.liElems = liElems
-    this.liElems[this.currentTabgroupIdx].classList.remove("selected")
+    this.liElems[this.currentTabgroupIdx]?.classList.remove("selected")
     this.initialTabgroupIdx = initialTabgroupIdx
     this.currentTabgroupIdx = initialTabgroupIdx
   }
